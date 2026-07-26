@@ -1,0 +1,207 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import Search from '../components/Search.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentSlug?: string;
+}
+
+const { 
+  title = "Chủ nghĩa Nội sinh", 
+  description = "Những ghi chép và suy ngẫm cá nhân trên con đường kết nối lại với chính mình.",
+  currentSlug 
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | Endogen</title>
+    <meta name="description" content={description} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    <!-- Inline script to prevent theme flash (FOUC) -->
+    <script is:inline>
+      const getTheme = () => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+      document.documentElement.setAttribute('data-theme', getTheme());
+    </script>
+  </head>
+  <body class="h-screen overflow-hidden flex flex-col bg-background text-foreground font-sans">
+    
+    <!-- Top Header -->
+    <header class="shrink-0 h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4 sm:px-6">
+      <div class="flex items-center gap-4">
+        <!-- Mobile Sidebar Toggle -->
+        <button
+          id="mobile-nav-toggle"
+          class="lg:hidden p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Open navigation"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="4" x2="20" y1="12" y2="12"></line>
+            <line x1="4" x2="20" y1="6" y2="6"></line>
+            <line x1="4" x2="20" y1="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Logo / Title -->
+        <a href="/" class="flex items-center gap-2.5 font-app font-semibold text-lg sm:text-xl tracking-tight text-foreground hover:text-accent transition-colors">
+          <span class="text-2xl drop-shadow-md select-none">🌱</span>
+          <span class="font-bold">Endogen <span class="text-xs font-normal text-muted-foreground ml-1.5 hidden sm:inline border-l border-border pl-1.5">Trở về với chính mình</span></span>
+        </a>
+      </div>
+
+      <!-- Actions Area -->
+      <div class="flex items-center gap-2 sm:gap-4">
+        <!-- Search bar -->
+        <Search />
+        
+        <!-- Theme Toggle -->
+        <ThemeToggle />
+        
+        <!-- Desktop External Links -->
+        <a 
+          href="https://github.com/taduongngoc" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="hidden md:inline-flex text-sm font-medium hover:text-accent transition-colors text-muted-foreground px-3 py-1.5 rounded-lg hover:bg-muted"
+        >
+          GitHub
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Desktop Sidebar -->
+      <aside class="hidden lg:block w-72 xl:w-80 shrink-0 border-r border-border overflow-y-auto bg-background/50 backdrop-blur-sm">
+        <div class="py-6 px-4">
+          <Sidebar currentSlug={currentSlug} />
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 overflow-y-auto relative bg-background/30" id="main-content">
+        <div class="max-w-4xl mx-auto px-4 sm:px-8 py-10 lg:py-16">
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div
+      id="mobile-drawer-backdrop"
+      class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 hidden transition-opacity duration-200 opacity-0"
+    >
+      <div class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-card border-r border-border shadow-2xl flex flex-col transition-transform duration-200 -translate-x-full">
+        <!-- Drawer Header -->
+        <div class="h-16 flex items-center justify-between px-4 border-b border-border">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🌱</span>
+            <span class="font-app font-bold text-base">Mục lục sách</span>
+          </div>
+          <button
+            id="mobile-nav-close"
+            class="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Close navigation"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" x2="6" y1="6" y2="18"></line>
+              <line x1="6" x2="18" y1="6" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Drawer Content -->
+        <div class="flex-1 overflow-y-auto p-4">
+          <Sidebar currentSlug={currentSlug} isMobile={true} />
+        </div>
+      </div>
+    </div>
+
+    <!-- Script for mobile menu -->
+    <script>
+      let isDrawerOpen = false;
+
+      const toggleDrawer = (show: boolean) => {
+        const backdrop = document.getElementById('mobile-drawer-backdrop');
+        const drawer = backdrop?.firstElementChild;
+
+        if (!backdrop || !drawer) return;
+
+        if (show) {
+          isDrawerOpen = true;
+          backdrop.classList.remove('hidden');
+          void backdrop.offsetHeight; // Reflow
+          backdrop.classList.remove('opacity-0');
+          drawer.classList.remove('-translate-x-full');
+          document.body.classList.add('overflow-hidden');
+        } else {
+          isDrawerOpen = false;
+          backdrop.classList.add('opacity-0');
+          drawer.classList.add('-translate-x-full');
+          setTimeout(() => {
+            if (!isDrawerOpen) {
+              backdrop.classList.add('hidden');
+              document.body.classList.remove('overflow-hidden');
+            }
+          }, 200);
+        }
+      };
+
+      const setupMobileMenu = () => {
+        const toggleBtn = document.getElementById('mobile-nav-toggle');
+        const closeBtn = document.getElementById('mobile-nav-close');
+        const backdrop = document.getElementById('mobile-drawer-backdrop');
+
+        toggleBtn?.addEventListener('click', () => toggleDrawer(true));
+        closeBtn?.addEventListener('click', () => toggleDrawer(false));
+        backdrop?.addEventListener('click', (e) => {
+          if (e.target === backdrop) {
+            toggleDrawer(false);
+          }
+        });
+      };
+
+      setupMobileMenu();
+      document.addEventListener('astro:after-swap', setupMobileMenu);
+    </script>
+  </body>
+</html>

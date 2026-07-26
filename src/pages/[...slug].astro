@@ -1,0 +1,355 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { getFlatNavigation, getNavigationTree } from '../utils/navigation';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('endogenism');
+  return entries.map(entry => {
+    const slug = entry.id === 'index' ? undefined : entry.id;
+    return {
+      params: { slug },
+      props: { entry },
+    };
+  });
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+// Determine active slug for navigation tree
+const currentSlug = entry.id === 'index' ? 'index' : entry.id;
+
+// Filter headings for TOC (h2 and h3 only)
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+
+// Get flat navigation for Prev/Next buttons
+const flatNav = await getFlatNavigation();
+const currentPath = entry.id === 'index' ? '/' : `/${entry.id}`;
+const currentIndex = flatNav.findIndex(item => item.slug === currentPath);
+
+const prevItem = currentIndex > 0 ? flatNav[currentIndex - 1] : null;
+const nextItem = currentIndex < flatNav.length - 1 ? flatNav[currentIndex + 1] : null;
+
+// Find current folder for breadcrumb
+const { folders } = await getNavigationTree(currentSlug);
+const currentFolder = folders.find(folder => 
+  folder.items.some(item => item.slug === currentPath)
+);
+---
+
+<Layout 
+  title={entry.data.title} 
+  description={entry.data.description} 
+  currentSlug={currentSlug}
+>
+  <div class="flex flex-col xl:flex-row gap-10 items-start">
+    
+    <!-- Left/Middle Column (Article Content) -->
+    <div class="flex-1 min-w-0 w-full">
+      <!-- Breadcrumb / Category Metadata -->
+      {currentFolder && (
+        <div class="flex items-center gap-1.5 text-xs font-semibold text-accent uppercase tracking-wider mb-3">
+          <span>{currentFolder.icon || '🌱'}</span>
+          <span>{currentFolder.title}</span>
+        </div>
+      )}
+
+      <!-- Mobile Table of Contents (Collapsible, only visible on < xl viewports) -->
+      {tocHeadings.length > 0 && (
+        <details class="xl:hidden bg-muted/65 border border-border/80 rounded-xl p-4 mb-8 select-none">
+          <summary class="flex justify-between items-center cursor-pointer text-sm font-semibold text-foreground/90 hover:text-accent transition-colors outline-none list-none [&::-webkit-details-marker]:hidden">
+            <span class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+              Mục lục bài viết
+            </span>
+            <span class="text-xs text-muted-foreground/80 font-normal">Chi tiết ▾</span>
+          </summary>
+          <ul class="mt-3 pl-3 ml-1.5 border-l border-border/70 space-y-2.5 text-sm">
+            {tocHeadings.map(h => (
+              <li class={h.depth === 3 ? 'pl-3' : ''}>
+                <a 
+                  href={`#${h.slug}`} 
+                  class="text-foreground/75 hover:text-accent transition-colors block leading-tight py-0.5"
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+
+      <!-- Main Article Body -->
+      <article class="prose max-w-none">
+        <Content />
+      </article>
+
+      <!-- Bottom Share Widget (Visible on all viewports, especially mobile) -->
+      <div class="mt-12 pt-6 border-t border-border/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 select-none">
+        <div class="text-sm font-semibold text-muted-foreground">Chia sẻ bài viết:</div>
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Facebook Share Button -->
+          <a
+            class="share-facebook-btn flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 hover:bg-accent/10 border border-border/80 hover:border-accent/20 rounded-lg text-xs font-semibold text-muted-foreground hover:text-accent transition-all"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Chia sẻ lên Facebook"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            Facebook
+          </a>
+
+          <!-- Twitter/X Share Button -->
+          <a
+            class="share-twitter-btn flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 hover:bg-accent/10 border border-border/80 hover:border-accent/20 rounded-lg text-xs font-semibold text-muted-foreground hover:text-accent transition-all"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Chia sẻ lên Twitter / X"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M4 4l11.733 16h4.267l-11.733 -16z"></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path></svg>
+            Twitter / X
+          </a>
+
+          <!-- Telegram Share Button -->
+          <a
+            class="share-telegram-btn flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 hover:bg-accent/10 border border-border/80 hover:border-accent/20 rounded-lg text-xs font-semibold text-muted-foreground hover:text-accent transition-all"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Chia sẻ qua Telegram"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+            Telegram
+          </a>
+
+          <!-- Email Share Button -->
+          <a
+            class="share-email-btn flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 hover:bg-accent/10 border border-border/80 hover:border-accent/20 rounded-lg text-xs font-semibold text-muted-foreground hover:text-accent transition-all"
+            href="#"
+            title="Gửi Email chia sẻ"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+            Email
+          </a>
+
+          <!-- Copy Link Button -->
+          <button
+            class="share-copy-btn flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 hover:bg-accent/10 border border-border/80 hover:border-accent/20 rounded-lg text-xs font-semibold text-muted-foreground hover:text-accent transition-all"
+            title="Sao chép liên kết"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+            <span class="copy-text-label">Sao chép liên kết</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Page Navigation Footer (Prev / Next Buttons) -->
+      <div class="mt-8 pt-8 border-t border-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        {prevItem ? (
+          <a 
+            href={prevItem.slug} 
+            class="flex-1 flex flex-col items-start gap-1 p-4 rounded-xl border border-border bg-card/45 hover:bg-muted/30 transition-all hover:border-accent/30 group text-left"
+          >
+            <span class="text-xs text-muted-foreground font-medium flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:-translate-x-0.5"><path d="m15 18-6-6 6-6"/></svg>
+              Bài trước
+            </span>
+            <span class="text-sm font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-1 leading-snug">
+              {prevItem.title}
+            </span>
+          </a>
+        ) : (
+          <div class="flex-1 hidden sm:block"></div>
+        )}
+
+        {nextItem ? (
+          <a 
+            href={nextItem.slug} 
+            class="flex-1 flex flex-col items-end gap-1 p-4 rounded-xl border border-border bg-card/45 hover:bg-muted/30 transition-all hover:border-accent/30 group text-right"
+          >
+            <span class="text-xs text-muted-foreground font-medium flex items-center gap-1">
+              Bài tiếp theo
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="m9 18 6-6-6-6"/></svg>
+            </span>
+            <span class="text-sm font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-1 leading-snug">
+              {nextItem.title}
+            </span>
+          </a>
+        ) : (
+          <div class="flex-1 hidden sm:block"></div>
+        )}
+      </div>
+    </div>
+
+    <!-- Right Column (Sticky TOC & Social Share, visible on desktop only) -->
+    <aside class="hidden xl:block w-64 shrink-0 sticky top-24 space-y-8 pl-6 border-l border-border bg-transparent select-none">
+      
+      <!-- Table of Contents -->
+      {tocHeadings.length > 0 && (
+        <div class="space-y-3">
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Mục lục bài viết</h3>
+          <ul class="space-y-2.5 text-sm">
+            {tocHeadings.map(h => (
+              <li class={h.depth === 3 ? 'pl-3' : ''}>
+                <a 
+                  href={`#${h.slug}`} 
+                  class="toc-link text-muted-foreground hover:text-accent transition-colors block leading-snug py-0.5 text-[13px]"
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <!-- Share Widget (Desktop Sticky) -->
+      <div class="space-y-4 pt-6 border-t border-border">
+        <h3 class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Chia sẻ bài viết</h3>
+        <div class="flex flex-col gap-3.5 text-sm text-muted-foreground">
+          <!-- Facebook Link -->
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="share-facebook-btn flex items-center gap-2.5 hover:text-accent transition-colors group text-[13px]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            Facebook
+          </a>
+          <!-- Twitter/X Link -->
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="share-twitter-btn flex items-center gap-2.5 hover:text-accent transition-colors group text-[13px]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M4 4l11.733 16h4.267l-11.733 -16z"></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path></svg>
+            Twitter / X
+          </a>
+          <!-- Telegram Link -->
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="share-telegram-btn flex items-center gap-2.5 hover:text-accent transition-colors group text-[13px]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+            Telegram
+          </a>
+          <!-- Email Link -->
+          <a
+            href="#"
+            class="share-email-btn flex items-center gap-2.5 hover:text-accent transition-colors group text-[13px]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+            Email
+          </a>
+          <!-- Copy Link Button -->
+          <button
+            class="share-copy-btn flex items-center gap-2.5 hover:text-accent transition-colors group text-[13px] text-left w-full"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+            <span class="copy-text-label">Sao chép liên kết</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</Layout>
+
+<script>
+  const setupArticlePage = () => {
+    const pageUrl = window.location.href;
+    const pageTitle = document.title;
+
+    // 1. Dynamic Social Share Links based on active URL
+    const fbBtns = document.querySelectorAll('.share-facebook-btn');
+    const twBtns = document.querySelectorAll('.share-twitter-btn');
+    const tgBtns = document.querySelectorAll('.share-telegram-btn');
+    const emBtns = document.querySelectorAll('.share-email-btn');
+    const copyBtns = document.querySelectorAll('.share-copy-btn');
+
+    fbBtns.forEach(btn => {
+      (btn as HTMLAnchorElement).href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
+    });
+    
+    twBtns.forEach(btn => {
+      (btn as HTMLAnchorElement).href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(pageTitle)}`;
+    });
+
+    tgBtns.forEach(btn => {
+      (btn as HTMLAnchorElement).href = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(pageTitle)}`;
+    });
+
+    emBtns.forEach(btn => {
+      (btn as HTMLAnchorElement).href = `mailto:?subject=${encodeURIComponent(pageTitle)}&body=${encodeURIComponent("Xem bài viết này của sách Endogen:\n\n" + pageUrl)}`;
+    });
+
+    // Copy Link Handlers for all copy buttons on page
+    copyBtns.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pageUrl);
+          
+          // Show copy confirmation feedback labels across all buttons simultaneously
+          const labels = document.querySelectorAll('.copy-text-label');
+          labels.forEach(label => {
+            (label as HTMLElement).innerText = 'Đã sao chép! ✔';
+            (label as HTMLElement).classList.add('text-accent');
+          });
+          
+          setTimeout(() => {
+            labels.forEach(label => {
+              (label as HTMLElement).innerText = 'Sao chép liên kết';
+              (label as HTMLElement).classList.remove('text-accent');
+            });
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy text', err);
+        }
+      });
+    });
+
+    // 2. Table of Contents Active Heading Highlight Logic (Scroll-Spy)
+    const headings = Array.from(document.querySelectorAll('article h2, article h3'));
+    const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+
+    if (headings.length === 0 || tocLinks.length === 0) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-10% 0px -70% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          
+          tocLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === `#${id}`) {
+              link.classList.add('text-accent', 'font-medium', 'border-l-2', 'border-accent', 'pl-2', '-ml-2');
+              link.classList.remove('text-muted-foreground');
+            } else {
+              link.classList.remove('text-accent', 'font-medium', 'border-l-2', 'border-accent', 'pl-2', '-ml-2');
+              link.classList.add('text-muted-foreground');
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    headings.forEach(heading => {
+      observer.observe(heading);
+    });
+  };
+
+  setupArticlePage();
+  document.addEventListener('astro:after-swap', setupArticlePage);
+</script>

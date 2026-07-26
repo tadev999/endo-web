@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: #ffffff;
+    --color-fg: #0f172a;
+    --color-border: #e2e8f0;
+    --color-accent: #10b981; /* Emerald 500 */
+    --color-muted: #f8fafc;
+    --color-muted-fg: #64748b;
+    --color-card: #ffffff;
+  }
+
+  :root[data-theme="dark"] {
+    --color-bg: #0b0f19; /* Deep indigo-gray */
+    --color-fg: #f1f5f9;
+    --color-border: #1e293b;
+    --color-accent: #34d399; /* Emerald 400 */
+    --color-muted: #111827;
+    --color-muted-fg: #94a3b8;
+    --color-card: #0f172a;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-fg);
+}
+
+/* Typography styles for article rendering */
+.prose {
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.prose h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.25;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.25rem;
+  border-b: 1px solid var(--color-border);
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose p {
+  margin-bottom: 1.25rem;
+}
+
+.prose blockquote {
+  border-left: 4px solid var(--color-accent);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  color: var(--color-muted-fg);
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.prose a:hover {
+  opacity: 0.8;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+}
