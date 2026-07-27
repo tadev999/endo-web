@@ -1,10 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
+import { withBase } from '../utils/navigation';
 
 const allEntries = await getCollection('endogenism');
 const searchDatabase = allEntries.map(entry => ({
   title: entry.data.title,
-  slug: entry.id === 'index' ? '/' : `/${entry.id}`,
+  slug: withBase(entry.id),
   body: entry.body ? entry.body.substring(0, 1000) : '', // index first 1000 chars to keep search DB size small
 }));
 ---

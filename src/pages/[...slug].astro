@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import { getFlatNavigation, getNavigationTree } from '../utils/navigation';
+import { getFlatNavigation, getNavigationTree, withBase } from '../utils/navigation';
 
 export async function getStaticPaths() {
   const entries = await getCollection('endogenism');
@@ -25,7 +25,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
 // Get flat navigation for Prev/Next buttons
 const flatNav = await getFlatNavigation();
-const currentPath = entry.id === 'index' ? '/' : `/${entry.id}`;
+const currentPath = withBase(entry.id);
 const currentIndex = flatNav.findIndex(item => item.slug === currentPath);
 
 const prevItem = currentIndex > 0 ? flatNav[currentIndex - 1] : null;

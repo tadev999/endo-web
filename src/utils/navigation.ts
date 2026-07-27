@@ -35,6 +35,14 @@ const DEFAULT_FOLDER_ICONS: Record<string, string> = {
   'mach-5-thanh-duong-the-tuc': '🏛️'
 };
 
+export function withBase(urlPath: string): string {
+  const baseUrl = import.meta.env.BASE_URL || '/';
+  const cleanBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const cleanPath = urlPath.startsWith('/') ? urlPath.slice(1) : urlPath;
+  if (!cleanPath || cleanPath === 'index') return cleanBase;
+  return `${cleanBase}${cleanPath}`;
+}
+
 export async function getNavigationTree(currentSlug?: string): Promise<NavigationTree> {
   const allEntries = await getCollection('endogenism');
   
@@ -75,7 +83,7 @@ export async function getNavigationTree(currentSlug?: string): Promise<Navigatio
   if (indexEntry) {
     rootItem = {
       title: indexEntry.data.title,
-      slug: '/',
+      slug: withBase('/'),
       order: rootOrder['index.md'] || 1,
       active: currentSlug === '' || currentSlug === 'index'
     };
@@ -112,7 +120,7 @@ export async function getNavigationTree(currentSlug?: string): Promise<Navigatio
       // Find the filename matching this entry
       // entry.id is like "mach-1-goi-ten/bai-001"
       const entryFilename = path.basename(entry.filePath || entry.id + '.md');
-      const itemSlug = `/${entry.id}`;
+      const itemSlug = withBase(entry.id);
       
       // Parse article number, e.g. "bai-001-..." -> 1
       const articleMatch = entryFilename.match(/^bai-(\d+)/i);
