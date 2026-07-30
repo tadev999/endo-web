@@ -1,13 +1,33 @@
 ---
 import { getCollection } from 'astro:content';
 import { withBase } from '../utils/navigation';
+import type { Lang } from '../utils/i18n';
+import { getTranslation } from '../utils/i18n';
 
-const allEntries = await getCollection('endogenism');
-const searchDatabase = allEntries.map(entry => ({
-  title: entry.data.title,
-  slug: withBase(entry.id),
-  body: entry.body ? entry.body.substring(0, 1000) : '', // index first 1000 chars to keep search DB size small
-}));
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'vi' } = Astro.props;
+const t = getTranslation(lang);
+
+const viEntries = await getCollection('endogenism');
+const enEntries = await getCollection('endogenism-en');
+
+const searchDatabase = [
+  ...viEntries.map(entry => ({
+    title: entry.data.title,
+    slug: withBase(entry.id, 'vi'),
+    body: entry.body ? entry.body.substring(0, 1000) : '',
+    lang: 'vi',
+  })),
+  ...enEntries.map(entry => ({
+    title: entry.data.title,
+    slug: withBase(entry.id, 'en'),
+    body: entry.body ? entry.body.substring(0, 1000) : '',
+    lang: 'en',
+  })),
+];
 ---
 
 <div class="relative">
@@ -62,7 +82,7 @@ const searchDatabase = allEntries.map(entry => ({
         <input
           type="text"
           id="search-input"
-          placeholder="Tìm kiếm bài viết..."
+          placeholder={t.searchModalPlaceholder}
           class="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground/60 text-base"
         />
         <button
@@ -76,16 +96,18 @@ const searchDatabase = allEntries.map(entry => ({
       <!-- Search Results -->
       <div id="search-results" class="flex-1 overflow-y-auto p-4 space-y-2 divide-y divide-border/30">
         <div class="text-center py-8 text-sm text-muted-foreground">
-          Nhập từ khóa để bắt đầu tìm kiếm...
+          {t.searchModalStartHint}
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Embed Search Database -->
-<script define:vars={{ searchDatabase }}>
+<!-- Embed Search Database and Current Language -->
+<script define:vars={{ searchDatabase, currentLang: lang, translations: t }}>
   window.searchDatabase = searchDatabase;
+  window.currentLang = currentLang;
+  window.searchTranslations = translations;
 </script>
 
 <script>
@@ -101,7 +123,6 @@ const searchDatabase = allEntries.map(entry => ({
     if (show) {
       isSearchOpen = true;
       backdrop.classList.remove('hidden');
-      // Force layout reflow for animation
       void backdrop.offsetHeight;
       backdrop.classList.remove('opacity-0');
       modal.classList.remove('translate-y-4');
@@ -136,7 +157,6 @@ const searchDatabase = allEntries.map(entry => ({
       }
     });
 
-    // Keyboard Shortcuts
     document.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
@@ -148,39 +168,42 @@ const searchDatabase = allEntries.map(entry => ({
       }
     });
 
-    // Simple search matching logic
     input?.addEventListener('input', (e) => {
       const query = (e.target as HTMLInputElement).value.toLowerCase().trim();
       if (!resultsContainer) return;
 
+      // @ts-ignore
+      const t = window.searchTranslations || {};
+
       if (!query) {
         resultsContainer.innerHTML = `
           <div class="text-center py-8 text-sm text-muted-foreground">
-            Nhập từ khóa để bắt đầu tìm kiếm...
+            ${t.searchModalStartHint || 'Start typing to search...'}
           </div>
         `;
         return;
       }
 
-      // Search matching logic: match query in title or body
       // @ts-ignore
       const db = window.searchDatabase || [];
+      // @ts-ignore
+      const curLang = window.currentLang || 'vi';
+
       const results = db.filter((item: any) => 
-        item.title.toLowerCase().includes(query) || 
-        item.body.toLowerCase().includes(query)
+        item.lang === curLang &&
+        (item.title.toLowerCase().includes(query) || item.body.toLowerCase().includes(query))
       );
 
       if (results.length === 0) {
         resultsContainer.innerHTML = `
           <div class="text-center py-8 text-sm text-muted-foreground">
-            Không tìm thấy kết quả phù hợp cho "${query}"
+            ${t.searchModalNoResults || 'No results found for'} "${query}"
           </div>
         `;
         return;
       }
 
       resultsContainer.innerHTML = results.map((res: any) => {
-        // Find match position in body for excerpt
         const index = res.body.toLowerCase().indexOf(query);
         let excerpt = '';
         if (index !== -1) {

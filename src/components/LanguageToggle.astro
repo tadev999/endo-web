@@ -1,0 +1,67 @@
+---
+import type { Lang } from '../utils/i18n';
+import { withBase } from '../utils/navigation';
+
+interface Props {
+  lang?: Lang;
+  rawSlug?: string; // e.g. "index" or "mach-1-goi-ten/bai-001"
+}
+
+const { lang = 'vi', rawSlug = '' } = Astro.props;
+
+const cleanSlug = rawSlug === 'index' || rawSlug === '' ? '' : rawSlug;
+
+const viUrl = withBase(cleanSlug, 'vi');
+const enUrl = withBase(cleanSlug, 'en');
+---
+
+<div class="relative inline-flex items-center p-0.5 bg-muted border border-border/80 rounded-lg text-xs font-semibold select-none">
+  <!-- VI Option -->
+  <a
+    href={viUrl}
+    data-lang="vi"
+    class={`flex items-center gap-1 px-2.5 py-1.5 rounded-md transition-all ${
+      lang === 'vi'
+        ? 'bg-background text-foreground shadow-sm font-bold border border-border/60'
+        : 'text-muted-foreground hover:text-foreground'
+    }`}
+    title="Tiếng Việt"
+    aria-label="Tiếng Việt"
+  >
+    <span class="text-xs">🇻🇳</span>
+    <span>VI</span>
+  </a>
+
+  <!-- EN Option -->
+  <a
+    href={enUrl}
+    data-lang="en"
+    class={`flex items-center gap-1 px-2.5 py-1.5 rounded-md transition-all ${
+      lang === 'en'
+        ? 'bg-background text-foreground shadow-sm font-bold border border-border/60'
+        : 'text-muted-foreground hover:text-foreground'
+    }`}
+    title="English"
+    aria-label="English"
+  >
+    <span class="text-xs">🇬🇧</span>
+    <span>EN</span>
+  </a>
+</div>
+
+<script>
+  const setupLanguageButtons = () => {
+    const langButtons = document.querySelectorAll('[data-lang]');
+    langButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const selectedLang = btn.getAttribute('data-lang');
+        if (selectedLang) {
+          localStorage.setItem('preferred_lang', selectedLang);
+        }
+      });
+    });
+  };
+
+  setupLanguageButtons();
+  document.addEventListener('astro:after-swap', setupLanguageButtons);
+</script>
