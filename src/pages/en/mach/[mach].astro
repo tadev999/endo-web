@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AnamPracticeBridge from '../../../components/AnamPracticeBridge.astro';
+import { MACH_EN, getJourney, machOf, slugOf, cleanTitle, postNumber, readingMinutes } from '../../../lib/journey';
+import { getT } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const all = await getJourney('en');
+  return MACH_EN.map((mach, i) => ({
+    params: { mach: mach.id },
+    props: {
+      mach,
+      prev: MACH_EN[i - 1],
+      next: MACH_EN[i + 1],
+      posts: all.filter((p) => machOf(p.id, 'en')?.id === mach.id),
+    },
+  }));
+}
+
+const { mach, prev, next, posts } = Astro.props;
+const lang = 'en';
+const t = getT(lang);
+---
+
+<BaseLayout title={`Stream ${mach.n}: ${mach.title} | Endogenism`} description={mach.desc} lang="en" currentPath={`/en/mach/${mach.id}`}>
+  <div class="max-w-3xl mx-auto px-5 sm:px-6 py-10">
+    <a href="/en#hanh-trinh" class="text-xs font-semibold text-zen-muted hover:text-zen-cream inline-flex items-center gap-1.5 mb-10">
+      {t.backTo5Mach}
+    </a>
+
+    <header class="relative mb-14">
+      <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none" style={`background:${mach.color}`}></div>
+      <div class="relative">
+        <div class="flex items-center gap-3 mb-5">
+          <span class="text-3xl w-14 h-14 rounded-full zen-glass flex items-center justify-center" style={`box-shadow:0 0 24px -6px ${mach.color}`}>{mach.icon}</span>
+          <span class="zen-chip" style={`color:${mach.color};background:${mach.color}1A;border:1px solid ${mach.color}33`}>
+            {t.machPrefix} {mach.n} · {mach.stage} · {mach.range}
+          </span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-serif text-zen-cream tracking-tight mb-6">{mach.title}</h1>
+        <p class="text-xl sm:text-2xl font-serif italic leading-snug mb-5" style={`color:${mach.color}`}>“{mach.question}”</p>
+        <p class="text-sm text-zen-muted leading-relaxed max-w-2xl">{mach.desc}</p>
+        <p id="machProgress" class="mt-5 text-xs text-zen-subtle"></p>
+      </div>
+    </header>
+
+    <ol class="space-y-3">
+      {posts.map((post) => {
+        const n = postNumber(post);
+        const postSlug = slugOf(post);
+        return (
+          <li>
+            <a
+              href={`/en/posts/${postSlug}`}
+              data-id={postSlug}
+              class="post-row zen-glass-card rounded-3xl p-5 flex items-center gap-5 group"
+            >
+              <span class="font-mono text-xs w-9 flex-shrink-0 text-zen-subtle">{n > 150 ? t.conclusion : String(n).padStart(3, '0')}</span>
+              <span class="flex-1 text-[15px] font-medium text-zen-cream/90 group-hover:text-white leading-snug">{cleanTitle(post)}</span>
+              <span class="flex-shrink-0 text-xs text-zen-subtle hidden sm:inline">{readingMinutes(post)}′</span>
+              <span class="read-mark flex-shrink-0 w-5 text-center text-sm" style={`color:${mach.color}`}></span>
+            </a>
+          </li>
+        );
+      })}
+    </ol>
+
+    <div class="mt-12 grid grid-cols-2 gap-4 text-sm">
+      {prev ? (
+        <a href={`/en/mach/${prev.id}`} class="zen-glass-card rounded-3xl p-5">
+          <span class="block text-[11px] uppercase tracking-wider text-zen-muted mb-1">← {t.machPrefix} {prev.n}</span>
+          <span class="text-zen-cream">{prev.title}</span>
+        </a>
+      ) : <div></div>}
+      {next && (
+        <a href={`/en/mach/${next.id}`} class="zen-glass-card rounded-3xl p-5 text-right">
+          <span class="block text-[11px] uppercase tracking-wider mb-1" style={`color:${next.color}`}>{t.machPrefix} {next.n} →</span>
+          <span class="text-zen-cream">{next.title}</span>
+        </a>
+      )}
+    </div>
+
+    <div class="mt-16">
+      <AnamPracticeBridge question={mach.question} color={mach.color} lang="en" />
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { getRead } from '../../../lib/progress';
+
+  const read = getRead();
+  const rows = document.querySelectorAll<HTMLElement>('.post-row');
+  let done = 0;
+  rows.forEach((row) => {
+    if (read.has(row.dataset.id || '')) {
+      done++;
+      const mark = row.querySelector('.read-mark');
+      if (mark) mark.textContent = '●';
+    }
+  });
+  const p = document.getElementById('machProgress');
+  if (p && done) p.textContent = `You have read ${done}/${rows.length} articles in this stream.`;
+</script>

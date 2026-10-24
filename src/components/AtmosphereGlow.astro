@@ -1,0 +1,47 @@
+---
+interface Props {
+  variant?: 'home' | 'post' | 'mach';
+}
+const { variant = 'home' } = Astro.props;
+---
+
+<!-- Hai quầng sáng hào quang sinh học di chuyển parallax nhẹ theo con lăn chuột -->
+<div
+  id="auraTop"
+  class="aura-glow top-[-10%] left-[20%] w-[680px] h-[680px] bg-[radial-gradient(circle,rgba(42,157,143,0.14)_0%,rgba(255,158,121,0.06)_40%,transparent_70%)] blur-[100px] animate-aura-breathe transition-transform duration-700 ease-out will-change-transform"
+></div>
+
+<div
+  id="auraBottom"
+  class="aura-glow bottom-[10%] right-[15%] w-[550px] h-[550px] bg-[radial-gradient(circle,rgba(231,111,81,0.08)_0%,rgba(42,157,143,0.04)_50%,transparent_75%)] blur-[90px] animate-aura-breathe transition-transform duration-700 ease-out will-change-transform"
+  style="animation-delay: -5s;"
+></div>
+
+<script>
+  function initAtmosphereParallax() {
+    const auraTop = document.getElementById('auraTop');
+    const auraBottom = document.getElementById('auraBottom');
+    if (!auraTop && !auraBottom) return;
+
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          if (auraTop) {
+            auraTop.style.transform = `translateY(${scrollY * 0.12}px) scale(${1 + Math.min(0.1, scrollY * 0.0001)})`;
+          }
+          if (auraBottom) {
+            auraBottom.style.transform = `translateY(${-scrollY * 0.08}px)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+
+  initAtmosphereParallax();
+  document.addEventListener('astro:page-load', initAtmosphereParallax);
+</script>

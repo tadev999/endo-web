@@ -1,0 +1,48 @@
+---
+interface Props {
+  quote: string;
+  author?: string;
+}
+const { quote, author = "Chủ nghĩa Nội sinh" } = Astro.props;
+---
+
+<div class="my-10 p-6 md:p-8 rounded-2xl zen-glass border-l-4 border-l-zen-sage border-y border-r border-white/5 relative group hover:border-l-zen-emerald transition-all duration-300">
+  <div class="text-3xl text-zen-sage/30 absolute top-4 left-4 font-serif">“</div>
+  <blockquote class="relative z-10 pl-6 text-lg md:text-xl font-serif italic text-zen-cream leading-relaxed mb-4">
+    {quote}
+  </blockquote>
+  <div class="relative z-10 flex items-center justify-between pl-6 text-xs text-zen-muted border-t border-white/5 pt-3">
+    <span>— {author}</span>
+    <button
+      class="copy-quote-btn flex items-center gap-1.5 text-zen-subtle hover:text-zen-emerald transition-colors"
+      data-quote={quote}
+      title="Sao chép câu trích dẫn"
+    >
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      <span class="copy-text">Sao chép</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  function setupCopy() {
+    document.querySelectorAll('.copy-quote-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const text = btn.getAttribute('data-quote');
+        if (!text) return;
+        await navigator.clipboard.writeText(text);
+        const span = btn.querySelector('.copy-text');
+        if (span) {
+          const old = span.textContent;
+          span.textContent = 'Đã chép!';
+          setTimeout(() => span.textContent = old, 2000);
+        }
+      });
+    });
+  }
+  setupCopy();
+  document.addEventListener('astro:page-load', setupCopy);
+</script>

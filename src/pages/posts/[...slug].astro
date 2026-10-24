@@ -1,0 +1,33 @@
+---
+import { render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getJourney, cleanTitle, slugOf, machOf, postNumber, readingMinutes, reflectionQuestion } from '../../lib/journey';
+
+export async function getStaticPaths() {
+  const posts = await getJourney('vi');
+  const link = (p?: (typeof posts)[number]) => (p ? { slug: slugOf(p), title: cleanTitle(p) } : undefined);
+
+  return posts.map((post, i) => ({
+    params: { slug: slugOf(post) },
+    props: { post, prevPost: link(posts[i - 1]), nextPost: link(posts[i + 1]) },
+  }));
+}
+
+const { post, prevPost, nextPost } = Astro.props;
+const { Content } = await render(post);
+const cleanSlug = slugOf(post);
+---
+
+<PostLayout
+  id={cleanSlug}
+  title={cleanTitle(post)}
+  number={postNumber(post)}
+  minutes={readingMinutes(post)}
+  question={reflectionQuestion(post, 'vi')}
+  mach={machOf(post.id, 'vi')}
+  lang="vi"
+  prevPost={prevPost}
+  nextPost={nextPost}
+>
+  <Content />
+</PostLayout>

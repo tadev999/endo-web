@@ -1,0 +1,36 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AnamPracticeBridge from '../../components/AnamPracticeBridge.astro';
+
+// English introduction: reads en/index.md (slug: 'en')
+const intro = (await getEntry('posts', 'en'))!;
+const { Content } = await render(intro);
+---
+
+<BaseLayout title="What is Endogenism? | Endogenism" description={intro.data.description} lang="en" currentPath="/en/noi-sinh">
+  <article class="max-w-3xl mx-auto px-5 sm:px-6 py-10 md:py-16">
+    <span class="zen-chip text-zen-emerald bg-zen-emerald/10 border border-zen-emerald/20 mb-6">🌱 Before You Begin</span>
+    <h1 class="text-[2rem] sm:text-5xl font-serif text-zen-cream tracking-tight !leading-[1.2] mb-5">
+      {intro.data.title}
+    </h1>
+    <p class="text-zen-muted leading-relaxed mb-12">{intro.data.description}</p>
+
+    <div class="zen-reading-content prose prose-zen prose-lg max-w-none mb-16">
+      <Content />
+    </div>
+
+    <a
+      href="/en/posts/mach-1-goi-ten/bai-001"
+      class="pebble-press zen-glass-card rounded-3xl p-6 flex items-center justify-between gap-4 mb-14 group"
+    >
+      <div>
+        <div class="text-[11px] uppercase tracking-[0.18em] font-semibold text-zen-emerald mb-1">Begin The Journey · Article 1</div>
+        <div class="text-zen-cream font-serif text-lg leading-snug">There is a kind of exhaustion not caused by lack of sleep — do you know its name?</div>
+      </div>
+      <span class="text-zen-emerald text-xl group-hover:translate-x-1 transition-transform">→</span>
+    </a>
+
+    <AnamPracticeBridge question="Who are you when no one is watching?" lang="en" />
+  </article>
+</BaseLayout>

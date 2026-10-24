@@ -1,24 +1,15 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const schema = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  order: z.number().optional(),
-  icon: z.string().optional(),
+const posts = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/posts' }),
+  schema: z.object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    date: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    order: z.number().optional(),
+  }),
 });
 
-const endogenism = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './endogenism' }),
-  schema,
-});
-
-const endogenismEn = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './endogenism-en' }),
-  schema,
-});
-
-export const collections = {
-  endogenism,
-  'endogenism-en': endogenismEn,
-};
+export const collections = { posts };

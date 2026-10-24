@@ -1,0 +1,328 @@
+---
+// Component Khoảng Dừng Thở 60 Giây - Micro-Breathe Ritual (Tối ưu độ nét và tính chỉn chu)
+---
+
+<div class="p-6 sm:p-10 text-center relative overflow-hidden">
+  <!-- Ánh sáng nền tinh tế -->
+  <div class="absolute -top-24 -left-24 w-72 h-72 bg-zen-emerald/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-zen-teal/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="relative z-10 max-w-lg mx-auto">
+    <!-- Header nhãn -->
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono text-zen-emerald bg-zen-emerald/15 border border-zen-emerald/30 mb-5">
+      <span class="w-2 h-2 rounded-full bg-zen-emerald animate-ping"></span>
+      <span>KHOẢNG DỪNG SINH HỌC 60 GIÂY</span>
+    </div>
+
+    <h3 class="text-2xl sm:text-3xl font-serif text-zen-cream tracking-tight mb-2.5">
+      Thả lỏng đôi vai. Quay về nhịp thở.
+    </h3>
+    <p class="text-xs sm:text-sm text-zen-muted mb-8 font-light max-w-md mx-auto leading-relaxed">
+      Kỹ thuật thở hộp 4-4-4 giúp kích hoạt hệ thần kinh phó giao cảm, hạ cortisol và xua tan căng thẳng tức thì.
+    </p>
+
+    <!-- KHU VỰC VÒNG TRÒN THỞ ĐỈNH CAO -->
+    <div class="relative w-64 h-64 mx-auto mb-8 flex items-center justify-center select-none">
+      
+      <!-- 1. Vòng tròn nền cố định & thước đo -->
+      <div class="absolute inset-0 rounded-full border border-zen-sage/15"></div>
+      <div class="absolute inset-3 rounded-full border border-dashed border-zen-sage/10"></div>
+
+      <!-- 2. Vòng tròn phát sáng nhịp thở (Breathing Orb) - TÁCH RIÊNG KHỎI CHỮ -->
+      <div
+        id="breathOrb"
+        class="absolute w-36 h-36 rounded-full bg-gradient-to-tr from-zen-emerald/20 via-zen-teal/15 to-zen-emerald/30 border border-zen-emerald/40 transition-transform duration-[4000ms] ease-in-out shadow-[0_0_35px_rgba(45,106,79,0.25)] pointer-events-none"
+      ></div>
+
+      <!-- 3. Vòng đếm tiến độ tổng 60s (SVG sắc nét) -->
+      <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 120 120">
+        <circle
+          cx="60"
+          cy="60"
+          r="56"
+          class="stroke-zen-emerald/15 fill-none"
+          stroke-width="2.5"
+        />
+        <circle
+          id="progressCircle"
+          cx="60"
+          cy="60"
+          r="56"
+          class="stroke-zen-emerald fill-none transition-all duration-300"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-dasharray="351.85"
+          stroke-dashoffset="0"
+        />
+      </svg>
+
+      <!-- 4. LỚP VĂN BẢN TRUNG TÂM (Cố định, sắc nét 100%, không bị co giãn làm mờ chữ) -->
+      <div class="relative z-20 flex flex-col items-center justify-center pointer-events-none">
+        <!-- Tên trạng thái nhịp thở -->
+        <span
+          id="breathPhaseLabel"
+          class="text-lg sm:text-xl font-serif font-medium text-zen-cream tracking-wide mb-1 transition-colors duration-300 drop-shadow-sm"
+        >
+          Sẵn sàng
+        </span>
+        
+        <!-- Đếm ngược từng giây trong nhịp (4, 3, 2, 1) -->
+        <div class="flex items-center gap-1.5 my-1">
+          <span
+            id="phaseCountdown"
+            class="text-2xl sm:text-3xl font-mono font-semibold text-zen-emerald tracking-tighter"
+          >
+            4
+          </span>
+          <span class="text-[10px] font-mono text-zen-muted uppercase">giây</span>
+        </div>
+
+        <!-- Hướng dẫn thao tác -->
+        <span
+          id="breathSubtext"
+          class="text-[11px] text-zen-muted font-light tracking-wider"
+        >
+          Nhấn bắt đầu bên dưới
+        </span>
+      </div>
+    </div>
+
+    <!-- Thanh thông số & Nút điều khiển -->
+    <div class="flex items-center justify-center gap-6 mb-6 text-xs font-mono text-zen-muted">
+      <div class="flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-zen-emerald"></span>
+        <span>Tổng thời gian: <strong id="timerDisplay" class="text-zen-cream font-medium">60s</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-zen-sage"></span>
+        <span>Chu kỳ: <strong id="cycleDisplay" class="text-zen-cream font-medium">0 / 5</strong></span>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-center gap-3">
+      <button
+        id="startBreathBtn"
+        type="button"
+        class="inline-flex items-center gap-2 px-7 py-3 rounded-full text-xs font-semibold bg-zen-emerald text-zen-dark hover:bg-zen-mint transition-all duration-300 shadow-lg shadow-zen-emerald/20 active:scale-95 cursor-pointer"
+      >
+        <span id="startBtnIcon">▶</span>
+        <span id="startBtnText">Bắt đầu 60 giây thở</span>
+      </button>
+      
+      <button
+        id="resetBreathBtn"
+        type="button"
+        class="px-5 py-3 rounded-full text-xs font-medium text-zen-muted hover:text-zen-cream border border-zen-sage/20 hover:border-zen-sage/40 transition-colors hidden cursor-pointer"
+      >
+        Đặt lại
+      </button>
+    </div>
+
+    <!-- Thông điệp an lành sau khi thở xong -->
+    <div id="breathCompletionMsg" class="mt-8 pt-6 border-t border-zen-emerald/20 hidden animate-fade-in">
+      <p class="text-base font-serif text-zen-emerald italic mb-2">
+        "Bạn vừa dành 60 giây quý báu để chăm sóc chính cơ thể và tâm trí mình."
+      </p>
+      <p class="text-xs text-zen-muted font-light">
+        Hãy mang sự bình thản này vào công việc và những người bạn gặp hôm nay.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  let timerInterval: number | null = null;
+  let totalSecondsLeft = 60;
+  let isRunning = false;
+  
+  // Chu kỳ 4s Hít vào -> 4s Nín giữ -> 4s Thở ra
+  type Phase = 'inhale' | 'hold' | 'exhale';
+  let currentPhase: Phase = 'inhale';
+  let phaseSecondsLeft = 4;
+  let completedCycles = 0;
+
+  const totalCircumference = 351.85; // 2 * PI * 56
+
+  function setupBreathing() {
+    const startBtn = document.getElementById('startBreathBtn');
+    const startBtnText = document.getElementById('startBtnText');
+    const startBtnIcon = document.getElementById('startBtnIcon');
+    const resetBtn = document.getElementById('resetBreathBtn');
+    const breathOrb = document.getElementById('breathOrb');
+    const phaseLabel = document.getElementById('breathPhaseLabel');
+    const phaseCountdown = document.getElementById('phaseCountdown');
+    const breathSubtext = document.getElementById('breathSubtext');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const cycleDisplay = document.getElementById('cycleDisplay');
+    const progressCircle = document.getElementById('progressCircle');
+    const completionMsg = document.getElementById('breathCompletionMsg');
+
+    if (!startBtn || !breathOrb || !phaseLabel || !phaseCountdown || !timerDisplay || !progressCircle) return;
+
+    function applyPhaseVisual(phase: Phase) {
+      if (!breathOrb || !phaseLabel || !breathSubtext) return;
+
+      if (phase === 'inhale') {
+        phaseLabel.textContent = 'Hít sâu vào...';
+        phaseLabel.className = 'text-xl sm:text-2xl font-serif font-medium text-zen-cream tracking-wide mb-1 transition-colors drop-shadow';
+        breathSubtext.textContent = 'Mở rộng lồng ngực bằng mũi';
+        // Vòng tròn nở to mượt mà trong 4 giây
+        breathOrb.style.transition = 'transform 4000ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 4000ms ease';
+        breathOrb.style.transform = 'scale(1.55)';
+        breathOrb.style.boxShadow = '0 0 50px rgba(45, 106, 79, 0.45)';
+      } else if (phase === 'hold') {
+        phaseLabel.textContent = 'Nín thở nhẹ...';
+        phaseLabel.className = 'text-xl sm:text-2xl font-serif font-medium text-zen-mint tracking-wide mb-1 transition-colors drop-shadow';
+        breathSubtext.textContent = 'Giữ sự tĩnh lặng trong thân';
+        // Đứng yên ở kích thước căng đầy
+        breathOrb.style.transition = 'none';
+        breathOrb.style.transform = 'scale(1.55)';
+      } else if (phase === 'exhale') {
+        phaseLabel.textContent = 'Thở ra chậm...';
+        phaseLabel.className = 'text-xl sm:text-2xl font-serif font-medium text-zen-sage tracking-wide mb-1 transition-colors drop-shadow';
+        breathSubtext.textContent = 'Thả lỏng toàn bộ cơ mặt & vai';
+        // Thu nhỏ êm ái về trạng thái nghỉ trong 4 giây
+        breathOrb.style.transition = 'transform 4000ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 4000ms ease';
+        breathOrb.style.transform = 'scale(0.9)';
+        breathOrb.style.boxShadow = '0 0 20px rgba(45, 106, 79, 0.15)';
+      }
+    }
+
+    function tick() {
+      totalSecondsLeft--;
+      phaseSecondsLeft--;
+
+      // Cập nhật đếm giây tổng
+      if (timerDisplay) {
+        timerDisplay.textContent = `${totalSecondsLeft}s`;
+      }
+
+      // Cập nhật vòng tiến độ tròn SVG
+      const offset = totalCircumference - (totalSecondsLeft / 60) * totalCircumference;
+      if (progressCircle) {
+        progressCircle.style.strokeDashoffset = `${offset}`;
+      }
+
+      // Hết pha hiện tại -> Chuyển sang pha kế tiếp
+      if (phaseSecondsLeft <= 0) {
+        if (currentPhase === 'inhale') {
+          currentPhase = 'hold';
+          phaseSecondsLeft = 4;
+        } else if (currentPhase === 'hold') {
+          currentPhase = 'exhale';
+          phaseSecondsLeft = 4;
+        } else if (currentPhase === 'exhale') {
+          currentPhase = 'inhale';
+          phaseSecondsLeft = 4;
+          completedCycles++;
+          if (cycleDisplay) {
+            cycleDisplay.textContent = `${completedCycles} / 5`;
+          }
+        }
+        applyPhaseVisual(currentPhase);
+      }
+
+      // Cập nhật số đếm ngược của pha hiện tại (4, 3, 2, 1)
+      if (phaseCountdown) {
+        phaseCountdown.textContent = String(phaseSecondsLeft);
+      }
+
+      // Kết thúc 60s
+      if (totalSecondsLeft <= 0) {
+        completeSession();
+      }
+    }
+
+    function startBreathing() {
+      if (isRunning) {
+        pauseBreathing();
+        return;
+      }
+
+      isRunning = true;
+      if (startBtnText) startBtnText.textContent = 'Tạm dừng nhịp thở';
+      if (startBtnIcon) startBtnIcon.textContent = '⏸';
+      if (resetBtn) resetBtn.classList.remove('hidden');
+      if (completionMsg) completionMsg.classList.add('hidden');
+
+      // Khởi động pha đầu
+      currentPhase = 'inhale';
+      phaseSecondsLeft = 4;
+      if (phaseCountdown) phaseCountdown.textContent = '4';
+      applyPhaseVisual('inhale');
+
+      timerInterval = window.setInterval(tick, 1000);
+    }
+
+    function pauseBreathing() {
+      isRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      if (startBtnText) startBtnText.textContent = 'Tiếp tục thở';
+      if (startBtnIcon) startBtnIcon.textContent = '▶';
+      if (phaseLabel) phaseLabel.textContent = 'Đang tạm dừng';
+      if (breathSubtext) breathSubtext.textContent = 'Nhấn tiếp tục khi bạn sẵn sàng';
+    }
+
+    function resetBreathing() {
+      isRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      totalSecondsLeft = 60;
+      currentPhase = 'inhale';
+      phaseSecondsLeft = 4;
+      completedCycles = 0;
+
+      if (startBtnText) startBtnText.textContent = 'Bắt đầu 60 giây thở';
+      if (startBtnIcon) startBtnIcon.textContent = '▶';
+      if (resetBtn) resetBtn.classList.add('hidden');
+      if (timerDisplay) timerDisplay.textContent = '60s';
+      if (cycleDisplay) cycleDisplay.textContent = '0 / 5';
+      if (phaseLabel) {
+        phaseLabel.textContent = 'Sẵn sàng';
+        phaseLabel.className = 'text-lg sm:text-xl font-serif font-medium text-zen-cream tracking-wide mb-1 transition-colors drop-shadow-sm';
+      }
+      if (phaseCountdown) phaseCountdown.textContent = '4';
+      if (breathSubtext) breathSubtext.textContent = 'Nhấn bắt đầu bên dưới';
+      if (progressCircle) progressCircle.style.strokeDashoffset = '0';
+      
+      if (breathOrb) {
+        breathOrb.style.transition = 'transform 600ms ease, box-shadow 600ms ease';
+        breathOrb.style.transform = 'scale(1)';
+        breathOrb.style.boxShadow = '0 0 25px rgba(45,106,79,0.2)';
+      }
+      if (completionMsg) completionMsg.classList.add('hidden');
+    }
+
+    function completeSession() {
+      isRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      if (startBtnText) startBtnText.textContent = 'Thở thêm một vòng';
+      if (startBtnIcon) startBtnIcon.textContent = '↻';
+      if (phaseLabel) {
+        phaseLabel.textContent = 'Tâm an định';
+        phaseLabel.className = 'text-xl sm:text-2xl font-serif font-medium text-zen-mint tracking-wide mb-1';
+      }
+      if (phaseCountdown) phaseCountdown.textContent = '✓';
+      if (breathSubtext) breathSubtext.textContent = 'Hoàn thành 60 giây';
+      if (breathOrb) {
+        breathOrb.style.transition = 'transform 1000ms ease';
+        breathOrb.style.transform = 'scale(1.1)';
+      }
+      if (completionMsg) completionMsg.classList.remove('hidden');
+    }
+
+    startBtn.onclick = startBreathing;
+    if (resetBtn) resetBtn.onclick = resetBreathing;
+  }
+
+  setupBreathing();
+  document.addEventListener('astro:page-load', setupBreathing);
+</script>

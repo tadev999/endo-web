@@ -1,34 +1,30 @@
 ---
-import type { Lang } from '../utils/i18n';
-import { withBase } from '../utils/navigation';
+import { switchLangUrl, type Lang } from '../lib/i18n';
 
 interface Props {
-  lang?: Lang;
-  rawSlug?: string; // e.g. "index" or "mach-1-goi-ten/bai-001"
+  currentLang?: Lang;
+  currentPath?: string;
 }
 
-const { lang = 'vi', rawSlug = '' } = Astro.props;
+const { currentLang = 'vi', currentPath = '/' } = Astro.props;
 
-const cleanSlug = rawSlug === 'index' || rawSlug === '' ? '' : rawSlug;
-
-const viUrl = withBase(cleanSlug, 'vi');
-const enUrl = withBase(cleanSlug, 'en');
+const viUrl = switchLangUrl(currentPath, 'vi');
+const enUrl = switchLangUrl(currentPath, 'en');
 ---
 
-<div class="relative inline-flex items-center p-0.5 bg-muted border border-border/80 rounded-lg text-xs font-semibold select-none">
+<div class="relative inline-flex items-center p-1 rounded-full zen-glass border border-zen-border/70 text-xs font-semibold select-none">
   <!-- VI Option -->
   <a
     href={viUrl}
     data-lang="vi"
-    class={`flex items-center gap-1 px-2.5 py-1.5 rounded-md transition-all ${
-      lang === 'vi'
-        ? 'bg-background text-foreground shadow-sm font-bold border border-border/60'
-        : 'text-muted-foreground hover:text-foreground'
+    class={`flex items-center gap-1.5 px-3 py-1 rounded-full transition-all duration-300 ${
+      currentLang === 'vi'
+        ? 'bg-zen-emerald text-zen-bg font-bold shadow-sm shadow-zen-emerald/30'
+        : 'text-zen-muted hover:text-zen-cream'
     }`}
     title="Tiếng Việt"
     aria-label="Tiếng Việt"
   >
-    <span class="text-xs">🇻🇳</span>
     <span>VI</span>
   </a>
 
@@ -36,32 +32,30 @@ const enUrl = withBase(cleanSlug, 'en');
   <a
     href={enUrl}
     data-lang="en"
-    class={`flex items-center gap-1 px-2.5 py-1.5 rounded-md transition-all ${
-      lang === 'en'
-        ? 'bg-background text-foreground shadow-sm font-bold border border-border/60'
-        : 'text-muted-foreground hover:text-foreground'
+    class={`flex items-center gap-1.5 px-3 py-1 rounded-full transition-all duration-300 ${
+      currentLang === 'en'
+        ? 'bg-zen-emerald text-zen-bg font-bold shadow-sm shadow-zen-emerald/30'
+        : 'text-zen-muted hover:text-zen-cream'
     }`}
     title="English"
     aria-label="English"
   >
-    <span class="text-xs">🇬🇧</span>
     <span>EN</span>
   </a>
 </div>
 
 <script>
-  const setupLanguageButtons = () => {
-    const langButtons = document.querySelectorAll('[data-lang]');
-    langButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const selectedLang = btn.getAttribute('data-lang');
-        if (selectedLang) {
-          localStorage.setItem('preferred_lang', selectedLang);
+  function setupLangSwitchers() {
+    document.querySelectorAll('[data-lang]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-lang');
+        if (lang) {
+          localStorage.setItem('preferred_lang', lang);
         }
       });
     });
-  };
+  }
 
-  setupLanguageButtons();
-  document.addEventListener('astro:after-swap', setupLanguageButtons);
+  setupLangSwitchers();
+  document.addEventListener('astro:page-load', setupLangSwitchers);
 </script>

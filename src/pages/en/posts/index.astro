@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { MACH_EN, getJourney, machOf, slugOf, cleanTitle, postNumber, reflectionQuestion } from '../../../lib/journey';
+import { getT } from '../../../lib/i18n';
+
+const lang = 'en';
+const t = getT(lang);
+const all = await getJourney('en');
+const groups = MACH_EN.map((mach) => ({
+  mach,
+  posts: all.filter((p) => machOf(p.id, 'en')?.id === mach.id),
+}));
+---
+
+<BaseLayout title="Table of Contents | Endogenism" description="150 contemplative reflections of Endogenism, divided across 5 core streams." lang="en" currentPath="/en/posts">
+  <div class="max-w-5xl mx-auto px-5 sm:px-6 py-10">
+    <div class="text-center max-w-2xl mx-auto mb-14">
+      <span class="zen-chip text-zen-emerald bg-zen-emerald/10 border border-zen-emerald/20 mb-4">📖 {t.backToToc}</span>
+      <h1 class="text-3xl md:text-5xl font-serif text-zen-cream tracking-tight mb-4">150 Reflections, 5 Streams</h1>
+      <p class="text-sm text-zen-muted leading-relaxed">
+        Read sequentially, or discover the piece that names whatever you are currently moving through. Take your time.
+      </p>
+      <p id="overallProgress" class="mt-3 text-xs text-zen-subtle"></p>
+
+      <div class="mt-8 relative max-w-md mx-auto">
+        <input
+          type="search"
+          id="searchInput"
+          placeholder={t.searchPlaceholder}
+          class="w-full px-5 py-3 rounded-full zen-glass text-sm text-zen-cream placeholder-zen-subtle border border-zen-border focus:border-zen-sage focus:outline-none focus:ring-1 focus:ring-zen-sage"
+        />
+      </div>
+
+      <div class="mt-5 flex flex-wrap justify-center gap-2">
+        {MACH_EN.map((m) => (
+          <a href={`#${m.id}`} class="pebble-press text-xs px-3 py-1.5 rounded-full zen-glass text-zen-muted hover:text-zen-cream">
+            <span style={`color:${m.color}`}>●</span> {m.title}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="space-y-16">
+      {groups.map(({ mach, posts }) => (
+        <section class="mach-group scroll-mt-28" id={mach.id}>
+          <a href={`/en/mach/${mach.id}`} class="flex items-end justify-between gap-4 border-b pb-4 mb-6 group" style={`border-color:${mach.color}33`}>
+            <div>
+              <div class="text-[11px] uppercase tracking-[0.18em] font-semibold mb-1" style={`color:${mach.color}`}>
+                {mach.icon} {t.machPrefix} {mach.n} · {mach.stage}
+              </div>
+              <h2 class="text-xl font-semibold text-zen-cream group-hover:text-white">{mach.title}</h2>
+              <p class="text-xs text-zen-muted mt-1 italic font-serif">“{mach.question}”</p>
+            </div>
+            <span class="text-xs text-zen-subtle flex-shrink-0">{mach.range}</span>
+          </a>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {posts.map((post) => {
+              const title = cleanTitle(post);
+              const n = postNumber(post);
+              const postSlug = slugOf(post);
+              return (
+                <a
+                  href={`/en/posts/${postSlug}`}
+                  data-id={postSlug}
+                  data-search={`${n} ${title} ${reflectionQuestion(post, 'en')}`.toLowerCase()}
+                  class="post-item zen-glass-card rounded-2xl p-4 flex items-start gap-3 group"
+                >
+                  <span class="font-mono text-[11px] text-zen-subtle mt-0.5 w-7 flex-shrink-0">{n > 150 ? t.conclusion : n}</span>
+                  <span class="flex-1 text-sm text-zen-cream/90 group-hover:text-white line-clamp-2 leading-snug">{title}</span>
+                  <span class="read-mark text-xs flex-shrink-0 mt-0.5 w-3" style={`color:${mach.color}`}></span>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </div>
+    <p id="noResult" class="hidden text-center text-sm text-zen-muted py-16">{t.noResult}</p>
+  </div>
+</BaseLayout>
+
+<script>
+  import { getRead } from '../../../lib/progress';
+
+  const items = [...document.querySelectorAll<HTMLElement>('.post-item')];
+  const groups = [...document.querySelectorAll<HTMLElement>('.mach-group')];
+
+  const read = getRead();
+  let done = 0;
+  items.forEach((item) => {
+    if (read.has(item.dataset.id || '')) {
+      done++;
+      item.querySelector('.read-mark')!.textContent = '●';
+    }
+  });
+  const overall = document.getElementById('overallProgress');
+  if (overall && done) overall.textContent = `You have read ${done} articles.`;
+
+  items.forEach((i) => (i.dataset.search = (i.dataset.search || '').toLowerCase()));
+
+  document.getElementById('searchInput')?.addEventListener('input', (e) => {
+    const q = (e.target as HTMLInputElement).value.trim().toLowerCase();
+    let any = false;
+    groups.forEach((g) => {
+      let visible = 0;
+      g.querySelectorAll<HTMLElement>('.post-item').forEach((item) => {
+        const show = !q || (item.dataset.search || '').includes(q);
+        item.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      g.style.display = visible ? '' : 'none';
+      if (visible) any = true;
+    });
+    document.getElementById('noResult')?.classList.toggle('hidden', any);
+  });
+</script>

@@ -1,0 +1,52 @@
+---
+---
+<div id="embers-container" class="fixed inset-0 pointer-events-none overflow-hidden z-[1]"></div>
+
+<script>
+  function createEmbers() {
+    const container = document.getElementById('embers-container');
+    if (!container) return;
+    container.innerHTML = '';
+    const count = 18;
+    for (let i = 0; i < count; i++) {
+      const ember = document.createElement('div');
+      ember.className = 'ember-dot';
+      const size = 2 + Math.random() * 3.5;
+      const left = Math.random() * 100;
+      const duration = 12 + Math.random() * 16;
+      const delay = Math.random() * 12;
+      const drift = (Math.random() - 0.5) * 120;
+      const maxOpacity = 0.25 + Math.random() * 0.4;
+
+      ember.style.cssText = `
+        left: ${left}%;
+        bottom: -20px;
+        width: ${size}px;
+        height: ${size}px;
+        opacity: 0;
+        animation: floatEmber ${duration}s ease-in-out infinite ${delay}s;
+        --drift: ${drift}px;
+        --max-op: ${maxOpacity};
+      `;
+      container.appendChild(ember);
+    }
+  }
+
+  // Chèn keyframes động
+  if (!document.getElementById('ember-keyframes')) {
+    const style = document.createElement('style');
+    style.id = 'ember-keyframes';
+    style.innerHTML = `
+      @keyframes floatEmber {
+        0% { transform: translateY(0) translateX(0); opacity: 0; }
+        20% { opacity: var(--max-op); }
+        80% { opacity: calc(var(--max-op) * 0.8); }
+        100% { transform: translateY(-115vh) translateX(var(--drift)); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  createEmbers();
+  document.addEventListener('astro:page-load', createEmbers);
+</script>

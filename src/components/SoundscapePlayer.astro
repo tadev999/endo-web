@@ -1,0 +1,119 @@
+---
+---
+<div class="fixed bottom-6 right-6 z-50">
+  <button
+    id="globalSoundscapeBtn"
+    class="zen-glass px-4 py-2.5 rounded-full flex items-center gap-2.5 text-xs font-medium text-zen-muted hover:text-zen-cream hover:border-zen-sage/40 transition-all duration-300 shadow-lg hover:shadow-zen-sage/10 hover:-translate-y-0.5 group"
+    aria-label="Bật/tắt âm thanh tĩnh lặng"
+  >
+    <span class="w-2 h-2 rounded-full bg-zen-subtle group-hover:bg-zen-sage transition-colors duration-300 sound-indicator"></span>
+    <span class="sound-icon">🎧</span>
+    <span id="soundLabel" class="tracking-wide">Bếp lửa tí tách</span>
+  </button>
+</div>
+
+<script>
+  let audioCtx: AudioContext | null = null;
+  let isPlaying = false;
+  let crackleInterval: any = null;
+  let noiseNode: AudioBufferSourceNode | null = null;
+  let gainNode: GainNode | null = null;
+
+  function initSoundscape() {
+    const btn = document.getElementById('globalSoundscapeBtn');
+    const label = document.getElementById('soundLabel');
+    const indicator = btn?.querySelector('.sound-indicator');
+
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      if (!isPlaying) {
+        try {
+          const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+          audioCtx = new AudioContextClass();
+          if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+
+          // Tiếng xì xào trầm ấm (Gentle Low Ambient Rumble)
+          const bufferSize = audioCtx.sampleRate * 2;
+          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            output[i] = (b0 + b1 + b2) * 0.1;
+          }
+
+          const whiteNoise = audioCtx.createBufferSource();
+          whiteNoise.buffer = noiseBuffer;
+          whiteNoise.loop = true;
+
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(320, audioCtx.currentTime);
+
+          gainNode = audioCtx.createGain();
+          gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0.16, audioCtx.currentTime + 1.5);
+
+          whiteNoise.connect(filter);
+          filter.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          whiteNoise.start();
+          noiseNode = whiteNoise;
+
+          // Tiếng nổ tách li ti ngẫu nhiên
+          crackleInterval = setInterval(() => {
+            if (!audioCtx || !isPlaying) return;
+            if (Math.random() < 0.6) {
+              const popOsc = audioCtx.createOscillator();
+              const popGain = audioCtx.createGain();
+              popOsc.type = 'triangle';
+              popOsc.frequency.setValueAtTime(600 + Math.random() * 1400, audioCtx.currentTime);
+              popOsc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.04);
+
+              popGain.gain.setValueAtTime(0.02 + Math.random() * 0.04, audioCtx.currentTime);
+              popGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+
+              popOsc.connect(popGain);
+              popGain.connect(audioCtx.destination);
+              popOsc.start();
+              popOsc.stop(audioCtx.currentTime + 0.05);
+            }
+          }, 180);
+
+          isPlaying = true;
+          if (label) label.innerText = 'Đang phát bếp lửa';
+          if (indicator) {
+            indicator.classList.remove('bg-zen-subtle');
+            indicator.classList.add('bg-zen-emerald', 'animate-pulse');
+          }
+        } catch (e) {
+          console.error('AudioContext error:', e);
+        }
+      } else {
+        if (gainNode && audioCtx) {
+          gainNode.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+          setTimeout(() => {
+            if (noiseNode) { noiseNode.stop(); noiseNode.disconnect(); }
+            if (audioCtx) { audioCtx.close(); }
+            clearInterval(crackleInterval);
+          }, 550);
+        }
+        isPlaying = false;
+        if (label) label.innerText = 'Bếp lửa tí tách';
+        if (indicator) {
+          indicator.classList.remove('bg-zen-emerald', 'animate-pulse');
+          indicator.classList.add('bg-zen-subtle');
+        }
+      }
+    });
+  }
+
+  initSoundscape();
+  document.addEventListener('astro:page-load', initSoundscape);
+</script>

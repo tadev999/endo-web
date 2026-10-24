@@ -1,0 +1,174 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AnamPracticeBridge from '../components/AnamPracticeBridge.astro';
+
+const youtubeMedia = [
+  {
+    title: 'Tại sao bạn luôn cảm thấy mệt dù đã ngủ đủ giấc?',
+    origin: 'Mạch 1: Bài 001',
+    link: '/posts/mach-1-goi-ten/bai-001',
+    duration: '18:45',
+    category: 'Podcast Thấu Cảm',
+    thumbnailColor: 'from-blue-900/40 to-slate-900/60',
+  },
+  {
+    title: 'Cỗ máy chạy ngầm: Khi cố gắng trở thành một gánh nặng',
+    origin: 'Mạch 1: Bài 002',
+    link: '/posts/mach-1-goi-ten/bai-002',
+    duration: '22:10',
+    category: 'Bài Giảng Nội Sinh',
+    thumbnailColor: 'from-teal-900/40 to-slate-900/60',
+  },
+  {
+    title: 'Thánh Đường Thế Tục: Không gian an trú cho những tâm hồn kiệt sức',
+    origin: 'Mạch 5: Bài 121',
+    link: '/posts/mach-5-thanh-duong-the-tuc/bai-121',
+    duration: '25:30',
+    category: 'Dẫn Thiền Buổi Tối',
+    thumbnailColor: 'from-rose-900/40 to-slate-900/60',
+  },
+];
+
+const tiktokMedia = [
+  {
+    quote: '"Bạn không lười. Bạn chỉ đang cố gắng quá lâu vì những nỗi sợ không phải của mình."',
+    origin: 'Mạch 1 / Bài 1',
+    link: '/posts/mach-1-goi-ten/bai-001',
+    views: '125K',
+  },
+  {
+    quote: '"Kể câu chuyện của mình — không phải để được thương hại, mà để ai đó thở phào: Hóa ra tôi cũng vậy."',
+    origin: 'Mạch 5 / Bài 121',
+    link: '/posts/mach-5-thanh-duong-the-tuc/bai-121',
+    views: '89K',
+  },
+  {
+    quote: '"Không cần phải tạo ra bước nhảy vọt. Một hơi thở chậm 3 phút là đủ để cứu một ngày."',
+    origin: 'Mạch 3 / Bài 65',
+    link: '/posts/mach-3-hanh-dong-nho/bai-065',
+    views: '210K',
+  },
+  {
+    quote: '"Giá trị của bạn không tăng lên khi người khác khen, và không mất đi khi họ quay lưng."',
+    origin: 'Mạch 2 / Bài 35',
+    link: '/posts/mach-2-xay-nen-tang/bai-035',
+    views: '160K',
+  },
+];
+---
+
+<BaseLayout title="Video & Podcast Đa Nền Tảng | Endogenism" description="Kênh nội dung đa phương tiện phát triển từ các bài viết trong cuốn sách Chủ nghĩa Nội sinh." lang="vi" currentPath="/media">
+  <div class="max-w-6xl mx-auto px-6 py-12">
+    <!-- Header Media -->
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-zen-ember/15 text-zen-ember border border-zen-ember/30 mb-3">
+        <span>🎥</span>
+        <span>TRUYỀN THÔNG ĐA PHƯƠNG TIỆN</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold text-zen-cream tracking-tight mb-4 font-sans">
+        Video, Podcast & Micro-Wisdom
+      </h1>
+      <p class="text-sm text-zen-muted leading-relaxed">
+        Những bài viết trong cuốn sách được chuyển hóa thành các nội dung nghe - nhìn ngắn gọn trên YouTube và TikTok để dễ dàng chạm đến bạn mỗi ngày.
+      </p>
+    </div>
+
+    <!-- 1. PHẦN YOUTUBE: Video & Podcast -->
+    <section id="youtube" class="mb-20">
+      <div class="flex items-center justify-between mb-8 border-b border-zen-border/60 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-zen-cream">YouTube Video & Podcast</h2>
+            <p class="text-xs text-zen-muted">Các bài đàm đạo sâu, audio dẫn thiền và chia sẻ phương pháp</p>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-zen-muted hidden sm:inline">Phát triển từ sách</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {youtubeMedia.map(item => (
+          <div class="zen-glass-card rounded-2xl overflow-hidden flex flex-col justify-between group">
+            <div class={`h-44 bg-gradient-to-br ${item.thumbnailColor} relative flex items-center justify-center p-6 border-b border-white/5`}>
+              <div class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xl group-hover:scale-110 group-hover:bg-red-500 transition-all duration-300 shadow-xl">
+                ▶
+              </div>
+              <span class="absolute bottom-3 right-3 px-2 py-0.5 rounded text-[11px] font-mono bg-black/60 text-white backdrop-blur-sm">
+                {item.duration}
+              </span>
+              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/10 text-zen-cream border border-white/10">
+                {item.category}
+              </span>
+            </div>
+
+            <div class="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <a href={item.link} class="text-xs font-bold text-zen-emerald hover:underline">
+                  {item.origin}
+                </a>
+                <h3 class="text-sm font-bold text-zen-cream mt-1.5 leading-snug group-hover:text-white">
+                  {item.title}
+                </h3>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-zen-muted">
+                <span>Nghe trên YouTube</span>
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 2. PHẦN TIKTOK: Micro-Wisdom 60s -->
+    <section id="tiktok" class="mb-20">
+      <div class="flex items-center justify-between mb-8 border-b border-zen-border/60 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-zen-cream">TikTok Micro-Wisdoms (60 Giây)</h2>
+            <p class="text-xs text-zen-muted">Những trích đoạn đắt giá chạm vào tâm thức trong một phút</p>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-zen-muted hidden sm:inline">Khổ dọc 9:16</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {tiktokMedia.map(item => (
+          <a
+            href={item.link}
+            class="zen-glass-card rounded-2xl p-6 aspect-[9/14] flex flex-col justify-between group relative overflow-hidden border border-white/5 hover:border-cyan-400/30 transition-all"
+          >
+            <!-- Background Glow Nhẹ -->
+            <div class="absolute -bottom-10 -right-10 w-28 h-28 rounded-full bg-cyan-500/10 blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
+
+            <div class="flex items-center justify-between text-[11px] font-bold text-zen-muted">
+              <span class="text-cyan-400">📱 Clip 60s</span>
+            </div>
+
+            <blockquote class="font-serif italic text-base text-zen-cream leading-relaxed my-auto group-hover:text-white transition-colors">
+              {item.quote}
+            </blockquote>
+
+            <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-zen-muted">
+              <span class="font-semibold text-zen-emerald">{item.origin}</span>
+              <span class="group-hover:translate-x-1 transition-transform">Đọc bài →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Cầu Nối Thực Hành -->
+    <AnamPracticeBridge />
+  </div>
+</BaseLayout>

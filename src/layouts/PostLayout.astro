@@ -1,0 +1,124 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import AnamPracticeBridge from '../components/AnamPracticeBridge.astro';
+import { getT, type Lang } from '../lib/i18n';
+import type { Mach } from '../lib/journey';
+
+interface Props {
+  id: string;
+  title: string;
+  number: number;
+  minutes: number;
+  question: string;
+  mach?: Mach;
+  lang?: Lang;
+  prevPost?: { slug: string; title: string };
+  nextPost?: { slug: string; title: string };
+}
+
+const {
+  id,
+  title,
+  number,
+  minutes,
+  question,
+  mach,
+  lang = 'vi',
+  prevPost,
+  nextPost,
+} = Astro.props;
+
+const t = getT(lang);
+const color = mach?.color ?? '#2A9D8F';
+const label = number > 150 ? t.conclusion : `${t.articlePrefix} ${number} / 150`;
+const readingTimeText = lang === 'en' ? `🍃 ${minutes} min mindful read` : `🍃 ${minutes} phút đọc chậm`;
+const tocUrl = lang === 'en' ? '/en/posts' : '/posts';
+const machUrl = (mId: string) => (lang === 'en' ? `/en/mach/${mId}` : `/mach/${mId}`);
+const postUrl = (pSlug: string) => (lang === 'en' ? `/en/posts/${pSlug}` : `/posts/${pSlug}`);
+const currentPath = lang === 'en' ? `/en/posts/${id}` : `/posts/${id}`;
+---
+
+<BaseLayout title={`${title} | Endogenism`} description={title} lang={lang} currentPath={currentPath}>
+  <article class="max-w-3xl mx-auto px-5 sm:px-6 py-10 md:py-16" style={`--mach:${color}`} data-post-id={id} data-post-title={title}>
+    <!-- Breadcrumb -->
+    {mach && (
+      <nav class="mb-8 flex flex-wrap items-center gap-2 text-xs font-semibold text-zen-muted">
+        <a href={tocUrl} class="hover:text-zen-cream">{t.backToToc}</a>
+        <span class="text-zen-subtle">/</span>
+        <a href={machUrl(mach.id)} class="hover:underline" style={`color:${color}`}>{mach.icon} {t.machPrefix} {mach.n}: {mach.title}</a>
+      </nav>
+    )}
+
+    <div class="flex flex-wrap items-center gap-3 mb-5 text-xs">
+      <span class="zen-chip" style={`color:${color};background:${color}1A;border:1px solid ${color}33`}>{label}</span>
+      <span class="text-zen-muted">{readingTimeText}</span>
+    </div>
+
+    <h1 class="text-[1.85rem] sm:text-4xl md:text-[2.75rem] font-serif text-zen-cream tracking-tight !leading-[1.25] mb-10">
+      {title}
+    </h1>
+
+    <div class="h-px w-24 mb-10" style={`background:linear-gradient(90deg, ${color}, transparent)`}></div>
+
+    <div class="zen-reading-content prose prose-zen prose-lg max-w-none mb-16">
+      <slot />
+    </div>
+
+    <div id="endOfPost"></div>
+
+    <AnamPracticeBridge question={question} color={color} lang={lang} />
+
+    <!-- Bài trước / bài sau -->
+    <div class="mt-14 pt-8 border-t border-zen-border/60 grid grid-cols-1 md:grid-cols-2 gap-4">
+      {prevPost ? (
+        <a href={postUrl(prevPost.slug)} class="zen-glass-card rounded-3xl p-5 group flex flex-col">
+          <span class="text-[11px] font-bold text-zen-muted uppercase tracking-wider mb-2">← {t.prevArticle}</span>
+          <span class="text-sm font-medium text-zen-cream line-clamp-2 group-hover:text-white">{prevPost.title}</span>
+        </a>
+      ) : <div></div>}
+
+      {nextPost && (
+        <a href={postUrl(nextPost.slug)} class="zen-glass-card rounded-3xl p-5 group flex flex-col text-right">
+          <span class="text-[11px] font-bold uppercase tracking-wider mb-2" style={`color:${color}`}>{t.nextArticle} →</span>
+          <span class="text-sm font-medium text-zen-cream line-clamp-2 group-hover:text-white">{nextPost.title}</span>
+        </a>
+      )}
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  /* Điểm nhấn của bài theo màu Mạch */
+  article :global(.zen-reading-content blockquote) {
+    border-left-color: var(--mach);
+    background: color-mix(in srgb, var(--mach) 6%, transparent);
+  }
+  article :global(.zen-reading-content h2) {
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  article :global(.zen-reading-content a) {
+    color: var(--mach);
+  }
+</style>
+
+<script>
+  import { markRead, setLast } from '../lib/progress';
+
+  const article = document.querySelector<HTMLElement>('[data-post-id]');
+  const end = document.getElementById('endOfPost');
+  if (article) {
+    const id = article.dataset.postId!;
+    setLast(id, article.dataset.postTitle || '');
+    if (end && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          markRead(id);
+          io.disconnect();
+        }
+      });
+      io.observe(end);
+    }
+  }
+</script>

@@ -1,0 +1,144 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DailyPebble from '../../components/DailyPebble.astro';
+import MoodSelector from '../../components/MoodSelector.astro';
+import FiveArteriesJourney from '../../components/FiveArteriesJourney.astro';
+import AnamPracticeBridge from '../../components/AnamPracticeBridge.astro';
+import { UI } from '../../lib/i18n';
+
+const twoValues = UI.en.twoValues;
+const phrases = UI.en.phrases;
+---
+
+<BaseLayout lang="en" currentPath="/en" title="Endogenism — Returning to Yourself" description="What you are seeking does not lie ahead of you. It is already within you — waiting to be trusted. 150 contemplative reflections, 5 streams, a journey from the inside out.">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 relative">
+
+    <!-- HERO -->
+    <section class="min-h-[78vh] flex flex-col items-center justify-center text-center pt-10 pb-16">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs text-zen-muted zen-glass mb-10">
+        <span class="w-1.5 h-1.5 rounded-full bg-zen-emerald animate-pulse"></span>
+        <span id="circadianBadge">Welcome</span>
+      </div>
+
+      <h1 class="text-[2rem] !leading-[1.2] sm:text-5xl lg:text-6xl font-serif text-zen-cream tracking-tight max-w-3xl mb-6 animate-fade-in">
+        What you are seeking does not lie ahead of you.
+        <span class="block italic text-zen-emerald mt-3">It is already within you — waiting to be trusted.</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-zen-muted max-w-xl leading-relaxed mb-10">
+        150 contemplative reflections for those weary of proving they are enough. No preachings, no rigid formulas — just honest questions to ask together.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center gap-3">
+        <a
+          id="heroStart"
+          href="/en/posts/mach-1-goi-ten/bai-001"
+          class="pebble-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold bg-zen-emerald text-zen-bg hover:bg-zen-mint shadow-lg shadow-zen-emerald/20"
+        >
+          <span id="heroStartLabel">Begin with Article 1</span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a href="/en/noi-sinh" class="pebble-press text-sm font-medium text-zen-muted hover:text-zen-cream py-3.5 px-5 rounded-full border border-white/10 hover:border-white/20">
+          What is Endogenism?
+        </a>
+      </div>
+      <p id="heroLast" class="hidden mt-4 text-xs text-zen-subtle max-w-md line-clamp-1"></p>
+    </section>
+
+    <!-- TODAY'S PEBBLE -->
+    <section class="zen-reveal mb-20">
+      <DailyPebble lang="en" />
+    </section>
+
+    <!-- TWO KINDS OF VALUE -->
+    <section class="zen-reveal my-20">
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <span class="zen-chip text-zen-gold bg-zen-gold/10 border border-zen-gold/20 mb-4">Starting Point</span>
+        <h2 class="text-2xl sm:text-3xl font-serif text-zen-cream tracking-tight">Two Kinds of Value</h2>
+        <p class="text-sm text-zen-muted mt-3 leading-relaxed">
+          Achievements, skills, and progress all hold value. But they are <em class="text-zen-cream">expressions</em> of worth — not the <em class="text-zen-cream">source</em> of it.
+        </p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        {twoValues.map((v, i) => (
+          <div class={`rounded-[1.75rem] p-6 sm:p-7 ${i === 1 ? 'zen-stream-pod border-zen-emerald/25' : 'zen-glass'}`}>
+            <h3 class={`text-lg font-serif mb-4 ${v.tone}`}>{v.name}</h3>
+            <ul class="space-y-3">
+              {v.lines.map((l) => (
+                <li class={`flex gap-3 text-sm leading-relaxed ${i === 1 ? 'text-zen-cream/90' : 'text-zen-muted'}`}>
+                  <span class={i === 1 ? 'text-zen-emerald' : 'text-zen-subtle'}>{i === 1 ? '●' : '○'}</span>
+                  <span>{l}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <p class="text-center font-serif italic text-zen-cream/80 mt-8">
+        Endogenism does not ask you to stop growing. It changes <span class="text-zen-emerald">where you stand</span> while you grow.
+      </p>
+    </section>
+
+    <div class="zen-mist-divider"></div>
+
+    <!-- 5 STREAMS -->
+    <section class="zen-reveal my-20">
+      <FiveArteriesJourney lang="en" />
+      <div class="text-center mt-10">
+        <a href="/en/posts" class="text-sm font-semibold text-zen-muted hover:text-zen-cream">View all 150 articles →</a>
+      </div>
+    </section>
+
+    <div class="zen-mist-divider"></div>
+
+    <!-- MOOD SELECTOR -->
+    <section class="zen-reveal my-20">
+      <MoodSelector />
+    </section>
+
+    <!-- LANGUAGE OF THIS PERSPECTIVE -->
+    <section class="zen-reveal my-20 text-center">
+      <p class="text-[11px] uppercase tracking-[0.2em] text-zen-subtle mb-5">Phrases you will return to often</p>
+      <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 max-w-2xl mx-auto">
+        {phrases.map((p, i) => (
+          <span class={`font-serif italic text-lg sm:text-xl ${i % 2 ? 'text-zen-cream/60' : 'text-zen-cream/90'}`}>“{p}”</span>
+        ))}
+      </div>
+    </section>
+
+    <!-- PRACTICE BRIDGE -->
+    <section class="zen-reveal my-20 pb-12">
+      <AnamPracticeBridge lang="en" />
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import { getLast } from '../../lib/progress';
+
+  const hour = new Date().getHours();
+  const badge = document.getElementById('circadianBadge');
+  if (badge) {
+    badge.textContent =
+      hour >= 5 && hour < 11 ? 'Good morning — no need to rush'
+      : hour < 17 && hour >= 11 ? 'Midday, a quiet, mindful breath'
+      : hour < 22 && hour >= 17 ? 'A peaceful evening'
+      : 'Late at night — you are still here';
+  }
+
+  const last = getLast();
+  if (last) {
+    const start = document.getElementById('heroStart') as HTMLAnchorElement | null;
+    const label = document.getElementById('heroStartLabel');
+    const hint = document.getElementById('heroLast');
+    if (start && label) {
+      start.href = `/en/posts/${last.id}`;
+      label.textContent = 'Continue your journey';
+    }
+    if (hint) {
+      hint.textContent = `Last read: ${last.title}`;
+      hint.classList.remove('hidden');
+    }
+  }
+</script>

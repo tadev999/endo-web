@@ -1,0 +1,91 @@
+---
+import type { Lang } from '../lib/i18n';
+
+interface Props {
+  question?: string;
+  color?: string;
+  lang?: Lang;
+}
+
+const { question, color = '#2A9D8F', lang = 'vi' } = Astro.props;
+
+const spaces = lang === 'en'
+  ? [
+      { icon: '⚓', name: 'Anchor Point', desc: 'Morning emotional check-in & one small action' },
+      { icon: '🪞', name: 'Mirror of Inquiry', desc: 'Reflective writing with a core question' },
+      { icon: '🍃', name: 'Space of Release', desc: 'Write it out, then let it go into the void' },
+      { icon: '🔥', name: 'Shared Hearth', desc: 'Warmth and stillness for fellow seekers' },
+    ]
+  : [
+      { icon: '⚓', name: 'Điểm Neo', desc: 'Check-in cảm xúc buổi sáng & một hành động nhỏ' },
+      { icon: '🪞', name: 'Gương Tự Vấn', desc: 'Viết tự do với một câu hỏi lớn' },
+      { icon: '🍃', name: 'Khoảng Buông', desc: 'Viết ra rồi gửi vào hư vô' },
+      { icon: '🔥', name: 'Bếp Lửa Chung', desc: 'Sưởi ấm những lữ khách khác' },
+    ];
+---
+
+<div class="zen-stream-pod p-6 sm:p-10 overflow-hidden" style={`--c:${color}`}>
+  <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-20" style={`background:${color}`}></div>
+
+  <div class="relative grid gap-8 md:grid-cols-[1.1fr_1fr] md:items-center">
+    <div>
+      <span class="zen-chip mb-5" style={`color:${color};background:${color}1A;border:1px solid ${color}33`}>
+        🌸 {lang === 'en' ? 'From Reading to Living' : 'Từ đọc đến sống'}
+      </span>
+
+      {question ? (
+        <>
+          <p class="text-xs text-zen-muted mb-2">{lang === 'en' ? 'A question to carry with you:' : 'Một câu hỏi để mang theo:'}</p>
+          <p class="text-xl sm:text-2xl font-serif italic text-zen-cream leading-snug mb-5">
+            “{question}”
+          </p>
+          <p class="text-sm text-zen-muted leading-relaxed mb-7">
+            {lang === 'en'
+              ? 'The answer does not lie in the reading — it lies within you. If you wish, take this question into Anam and sit with it for a few quiet moments.'
+              : 'Câu trả lời không nằm trong bài viết — nó nằm trong bạn. Nếu muốn, bạn có thể mang câu hỏi này vào Anam và để nó ở đó vài phút.'}
+          </p>
+        </>
+      ) : (
+        <>
+          <h3 class="text-2xl sm:text-3xl font-serif text-zen-cream leading-snug mb-4">
+            {lang === 'en' ? 'Read to understand.' : 'Đọc để hiểu.'}{' '}
+            <span class="italic" style={`color:${color}`}>
+              {lang === 'en' ? 'Live to trust.' : 'Sống để tin.'}
+            </span>
+          </h3>
+          <p class="text-sm text-zen-muted leading-relaxed mb-7">
+            {lang === 'en'
+              ? 'These reflections are a compass. Anam is the sanctuary for practice — a few minutes each day, no scoring, no leaderboards, just you and yourself.'
+              : 'Những bài viết ở đây là la bàn. Anam là nơi để thực hành — vài phút mỗi ngày, không chấm điểm, không bảng xếp hạng, chỉ bạn và chính mình.'}
+          </p>
+        </>
+      )}
+
+      <a
+        href="https://anam.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="pebble-press inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-sm font-semibold text-zen-bg shadow-lg"
+        style={`background:${color};box-shadow:0 10px 30px -10px ${color}`}
+      >
+        <span>{lang === 'en' ? 'Open Anam to practice' : 'Mở Anam để thực hành'}</span>
+        <span aria-hidden="true">↗</span>
+      </a>
+      <div class="mt-3 text-[11px] text-zen-subtle">
+        {lang === 'en'
+          ? 'anam.app — free • private local storage'
+          : 'anam.app — miễn phí • dữ liệu viết lưu trên máy bạn'}
+      </div>
+    </div>
+
+    <ul class="grid grid-cols-2 gap-3">
+      {spaces.map((s) => (
+        <li class="zen-glass rounded-3xl p-4">
+          <div class="text-xl mb-2">{s.icon}</div>
+          <div class="text-sm font-semibold text-zen-cream">{s.name}</div>
+          <div class="text-[11px] text-zen-muted leading-snug mt-1">{s.desc}</div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>

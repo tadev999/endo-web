@@ -1,0 +1,122 @@
+---
+import LanguageToggle from './LanguageToggle.astro';
+import { getT, type Lang } from '../lib/i18n';
+
+interface Props {
+  currentPath?: string;
+  lang?: Lang;
+}
+
+const { currentPath = '/', lang = 'vi' } = Astro.props;
+const t = getT(lang);
+
+const navLinks = lang === 'en'
+  ? [
+      { href: '/en/noi-sinh', label: t.navAbout },
+      { href: '/en#hanh-trinh', label: t.nav5Mach },
+      { href: '/en/posts', label: t.navToc },
+    ]
+  : [
+      { href: '/noi-sinh', label: t.navAbout },
+      { href: '/#hanh-trinh', label: t.nav5Mach },
+      { href: '/posts', label: t.navToc },
+    ];
+
+const homeUrl = lang === 'en' ? '/en' : '/';
+---
+
+<header class="fixed top-0 left-0 right-0 z-40 zen-glass border-b border-zen-border/60 transition-all duration-300">
+  <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
+    <!-- Logo & Nhận diện -->
+    <a href={homeUrl} class="flex items-center gap-3.5 group flex-shrink-0">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-zen-sage to-zen-emerald flex items-center justify-center text-white text-lg shadow-md shadow-zen-sage/20 group-hover:scale-105 transition-transform duration-300">
+        🌸
+      </div>
+      <div>
+        <div class="font-bold text-lg text-zen-cream tracking-tight group-hover:text-zen-emerald transition-colors">
+          endogenism
+        </div>
+        <div class="text-[10px] font-semibold text-zen-muted uppercase tracking-[0.2em] -mt-0.5">
+          {t.tagline}
+        </div>
+      </div>
+    </a>
+
+    <!-- Menu Điều hướng Desktop -->
+    <nav class="hidden md:flex items-center gap-8">
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          class="text-sm font-medium text-zen-muted hover:text-zen-cream transition-colors duration-200 relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-zen-sage hover:after:w-full after:transition-all after:duration-300"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <!-- Nút Cầu Nối Thực Hành Sang Anam App & Chuyển Đổi Ngôn Ngữ -->
+    <div class="flex items-center gap-3 flex-shrink-0">
+      <LanguageToggle currentLang={lang} currentPath={currentPath} />
+
+      <a
+        href="https://anam.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="pebble-press hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-zen-sage/20 to-zen-emerald/20 text-zen-emerald border border-zen-sage/40 hover:bg-zen-sage/30 hover:border-zen-emerald hover:text-white transition-all duration-300 shadow-sm shadow-zen-sage/10 hover:shadow-zen-sage/20 hover:-translate-y-0.5"
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-zen-emerald animate-pulse"></span>
+        <span>{t.openAnam}</span>
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+      </a>
+
+      <!-- Mobile Menu Toggle -->
+      <button
+        id="mobileMenuBtn"
+        class="md:hidden p-2 text-zen-muted hover:text-zen-cream"
+        aria-label={t.menuOpen}
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div id="mobileMenu" class="hidden md:hidden zen-glass border-b border-zen-border px-6 py-5 flex flex-col gap-4 animate-fade-in">
+    {navLinks.map(link => (
+      <a
+        href={link.href}
+        class="text-sm font-medium text-zen-muted hover:text-zen-cream py-1"
+      >
+        {link.label}
+      </a>
+    ))}
+    <a
+      href="https://anam.app"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-sm font-medium text-zen-emerald py-1 flex items-center gap-2"
+    >
+      <span>🌸</span>
+      <span>{t.openAnam}</span>
+    </a>
+  </div>
+</header>
+
+<script>
+  function setupMenu() {
+    const btn = document.getElementById('mobileMenuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (!btn || !menu) return;
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  }
+  setupMenu();
+  document.addEventListener('astro:page-load', setupMenu);
+</script>

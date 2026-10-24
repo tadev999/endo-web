@@ -1,8 +1,16 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
+import remarkStripBookChrome from './src/lib/remark-strip-book-chrome.mjs';
 
+// https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind()],
-  base: process.env.BASE_PATH || '/',
-  site: 'https://tadev999.github.io',
+  site: 'https://endogenism.com',
+  markdown: {
+    remarkPlugins: [remarkStripBookChrome],
+  },
+  integrations: [
+    tailwind({
+      applyBaseStyles: false,
+    }),
+  ],
 });

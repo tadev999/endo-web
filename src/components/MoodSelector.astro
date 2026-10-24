@@ -1,0 +1,37 @@
+---
+// Lối vào theo tâm trạng — mỗi lựa chọn dẫn thẳng tới một bài cụ thể.
+const moods = [
+  { icon: '🌧️', label: 'Mệt dù đã ngủ đủ', href: '/posts/mach-1-goi-ten/bai-001' },
+  { icon: '🌙', label: 'Đầu cứ chạy lúc nửa đêm', href: '/posts/mach-1-goi-ten/bai-014' },
+  { icon: '📱', label: 'Cứ so sánh mình với người khác', href: '/posts/mach-1-goi-ten/bai-003' },
+  { icon: '🛋️', label: 'Thấy có lỗi khi nghỉ ngơi', href: '/posts/mach-1-goi-ten/bai-005' },
+  { icon: '🎭', label: 'Phải tỏ ra ổn', href: '/posts/mach-1-goi-ten/bai-022' },
+  { icon: '🍂', label: 'Vừa thất bại', href: '/posts/mach-1-goi-ten/bai-004' },
+  { icon: '🧱', label: 'Không tha thứ được cho mình', href: '/posts/mach-2-xay-nen-tang/bai-054' },
+  { icon: '🌱', label: 'Muốn bắt đầu lại mà thấy ngợp', href: '/posts/mach-3-hanh-dong-nho/bai-064' },
+  { icon: '🪞', label: 'Không biết mình là ai', href: '/posts/mach-4-nhan-ra-gia-tri/bai-091' },
+  { icon: '⛈️', label: 'Đang ở giữa cơn bão', href: '/posts/mach-4-nhan-ra-gia-tri/bai-116' },
+  { icon: '👥', label: 'Cô đơn giữa đám đông', href: '/posts/mach-1-goi-ten/bai-026' },
+  { icon: '🕯️', label: 'Cần ai đó nghe mình', href: '/posts/mach-5-thanh-duong-the-tuc/bai-121' },
+];
+---
+
+<div class="text-center">
+  <span class="zen-chip text-zen-amber bg-zen-amber/10 border border-zen-amber/20 mb-4">🧭 Bắt đầu từ chỗ bạn đang đứng</span>
+  <h2 class="text-2xl sm:text-3xl font-serif text-zen-cream tracking-tight mb-3">Lúc này, điều gì gần với bạn nhất?</h2>
+  <p class="text-sm text-zen-muted mb-8 max-w-md mx-auto leading-relaxed">
+    Không có câu trả lời đúng. Chỉ có bài viết đang chờ đúng lúc này.
+  </p>
+
+  <div class="flex flex-wrap justify-center gap-2.5 max-w-2xl mx-auto">
+    {moods.map((m) => (
+      <a
+        href={m.href}
+        class="pebble-press zen-glass inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm text-zen-cream/90 hover:text-white hover:border-zen-amber/40"
+      >
+        <span>{m.icon}</span>
+        <span>{m.label}</span>
+      </a>
+    ))}
+  </div>
+</div>

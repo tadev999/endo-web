@@ -1,0 +1,150 @@
+---
+// Thẻ Nhắc Nhở Khi Bất An - The Serendipity Mindful Card
+---
+
+<div class="p-6 sm:p-10 relative overflow-hidden text-center">
+  <div class="max-w-xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono text-zen-ochre bg-zen-ochre/10 border border-zen-ochre/20 mb-4">
+      <span>🎴</span>
+      <span>Soi Sáng Khoảnh Khắc</span>
+    </div>
+
+    <h3 class="text-xl md:text-2xl font-serif text-zen-cream mb-2">
+      Khi lòng bạn thấy chông chênh hay bất an
+    </h3>
+    <p class="text-xs text-zen-muted mb-8 font-light">
+      Hãy nhắm mắt lại 3 giây, hít một hơi sâu và rút lấy một thông điệp nội sinh dành riêng cho lúc này.
+    </p>
+
+    <!-- Hộp Thẻ Lật Mở -->
+    <div class="relative min-h-[200px] flex items-center justify-center p-6 rounded-2xl zen-glass border border-zen-ochre/30 transition-all duration-500 shadow-lg" id="cardContainer">
+      <div id="cardPlaceholder" class="text-center py-6">
+        <span class="text-4xl block mb-3 animate-bounce">✨</span>
+        <button
+          id="drawCardBtn"
+          type="button"
+          class="px-6 py-3 rounded-full text-xs font-semibold bg-zen-ochre/20 hover:bg-zen-ochre/30 text-zen-ochre border border-zen-ochre/40 hover:border-zen-ochre transition-all shadow-md active:scale-95"
+        >
+          Rút một lời nhắc nhở
+        </button>
+      </div>
+
+      <!-- Thẻ sau khi lật -->
+      <div id="cardRevealed" class="hidden text-left space-y-4 w-full animate-fade-in">
+        <div class="flex items-center justify-between text-[11px] text-zen-ochre/80 font-mono">
+          <span id="cardTheme">THƯ THÁI TÂM TRÍ</span>
+          <span id="cardNumber">#01</span>
+        </div>
+
+        <blockquote id="cardQuote" class="text-base md:text-lg font-serif text-zen-cream italic leading-relaxed">
+          "..."
+        </blockquote>
+
+        <p id="cardAdvice" class="text-xs md:text-sm text-zen-muted font-light leading-relaxed">
+          ...
+        </p>
+
+        <div class="pt-4 border-t border-zen-sage/10 flex items-center justify-between">
+          <button
+            id="redrawCardBtn"
+            type="button"
+            class="text-xs text-zen-muted hover:text-zen-cream transition-colors flex items-center gap-1.5"
+          >
+            <span>↻</span>
+            <span>Rút thẻ khác</span>
+          </button>
+          <a
+            id="cardLink"
+            href="/posts"
+            class="text-xs font-medium text-zen-emerald hover:underline"
+          >
+            Đọc bài viết liên quan →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const mindfulCards = [
+    {
+      theme: "CHẤP NHẬN CẢM XÚC",
+      quote: "Bạn không cần phải cảm thấy ổn mọi lúc. Cho phép mình buồn cũng là một dạng dũng cảm.",
+      advice: "Hãy ngừng trách móc bản thân vì đang mệt mỏi. Đặt tay lên ngực và tự nhủ: 'Mình đang làm hết sức rồi.'",
+      slug: "mach-1-goi-ten/bai-001"
+    },
+    {
+      theme: "BUÔNG XẢ SO SÁNH",
+      quote: "Bông hoa không cạnh tranh với bông hoa bên cạnh. Nó chỉ đơn giản là nở rộ.",
+      advice: "Mạng xã hội chỉ là sân khấu của người khác, đừng dùng nó để đo lường hậu trường thầm lặng của bạn.",
+      slug: "mach-2-nhan-dien/bai-031"
+    },
+    {
+      theme: "QUAY VỀ HIỆN TẠI",
+      quote: "Lo âu là việc bạn đang sống trong một tương lai chưa xảy ra bằng sự sợ hãi của quá khứ.",
+      advice: "Hãy cảm nhận bàn chân chạm đất, hơi thở đi qua cánh mũi. Ngay giây phút này, bạn vẫn an toàn.",
+      slug: "mach-3-thau-suot/bai-061"
+    },
+    {
+      theme: "SỨC MẠNH TỰ THÂN",
+      quote: "Con chim đậu trên cành cây không bao giờ sợ cành cây gãy, vì niềm tin của nó nằm ở đôi cánh, chứ không phải ở cành cây.",
+      advice: "Nguồn lực lớn nhất để bảo bọc bạn không nằm ở ngoại cảnh, mà nằm ở sức bật nội sinh bên trong bạn.",
+      slug: "mach-4-chuyen-hoa/bai-091"
+    },
+    {
+      theme: "LÒNG TỰ TRẮC ẨN",
+      quote: "Nếu sự trắc ẩn của bạn không bao gồm chính bạn, nó vẫn chưa trọn vẹn.",
+      advice: "Hôm nay, hãy đối xử với bản thân bằng sự dịu dàng mà bạn vẫn dành cho người bạn thân nhất.",
+      slug: "mach-5-an-tru/bai-121"
+    },
+    {
+      theme: "DỪNG LẠI ĐỂ TÁI TẠO",
+      quote: "Chiếc cung kéo căng mãi rồi cũng đứt. Người làm việc không ngơi nghỉ rồi cũng kiệt sức.",
+      advice: "Nghỉ ngơi không phải là phần thưởng sau khi hoàn thành mọi việc, nghỉ ngơi là trách nhiệm để bạn tiếp tục sống.",
+      slug: "mach-3-thau-suot/bai-075"
+    },
+    {
+      theme: "SỐNG VỚI NỘI TÂM",
+      quote: "Ai nhìn ra ngoài thì mơ mộng, ai nhìn vào trong mới thức tỉnh.",
+      advice: "Dành ra 5 phút đêm nay trong bóng tối tĩnh lặng để nghe tâm tư sâu kín nhất của mình cất tiếng.",
+      slug: "mach-1-goi-ten/bai-015"
+    }
+  ];
+
+  function initCardDraw() {
+    const drawBtn = document.getElementById('drawCardBtn');
+    const redrawBtn = document.getElementById('redrawCardBtn');
+    const placeholder = document.getElementById('cardPlaceholder');
+    const revealed = document.getElementById('cardRevealed');
+    const themeEl = document.getElementById('cardTheme');
+    const numberEl = document.getElementById('cardNumber');
+    const quoteEl = document.getElementById('cardQuote');
+    const adviceEl = document.getElementById('cardAdvice');
+    const linkEl = document.getElementById('cardLink') as HTMLAnchorElement | null;
+
+    if (!drawBtn || !placeholder || !revealed) return;
+
+    function drawRandomCard() {
+      const randomIndex = Math.floor(Math.random() * mindfulCards.length);
+      const card = mindfulCards[randomIndex];
+
+      if (themeEl) themeEl.textContent = card.theme;
+      if (numberEl) numberEl.textContent = `#${String(randomIndex + 1).padStart(2, '0')}`;
+      if (quoteEl) quoteEl.textContent = `"${card.quote}"`;
+      if (adviceEl) adviceEl.textContent = card.advice;
+      if (linkEl) linkEl.href = `/posts/${card.slug}`;
+
+      placeholder?.classList.add('hidden');
+      revealed?.classList.remove('hidden');
+    }
+
+    drawBtn.onclick = drawRandomCard;
+    if (redrawBtn) {
+      redrawBtn.onclick = drawRandomCard;
+    }
+  }
+
+  initCardDraw();
+  document.addEventListener('astro:page-load', initCardDraw);
+</script>

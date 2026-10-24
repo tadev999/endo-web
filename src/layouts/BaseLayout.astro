@@ -1,0 +1,105 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import AtmosphereGlow from '../components/AtmosphereGlow.astro';
+import EmbersCanvas from '../components/EmbersCanvas.astro';
+import { getT, type Lang } from '../lib/i18n';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentPath?: string;
+  lang?: Lang;
+}
+
+const {
+  lang = 'vi',
+  currentPath = '/',
+} = Astro.props;
+
+const t = getT(lang);
+const title = Astro.props.title || t.siteTitle;
+const description = Astro.props.description || t.siteDescription;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / SEO -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Endogenism" />
+
+    <!-- Google Fonts: Plus Jakarta Sans & Lora (Contemplative Zen Serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body class="min-h-screen bg-zen-bg text-zen-cream relative selection:bg-zen-sage/30 selection:text-white">
+    <!-- Sợi tơ ngọc bích đo tiến trình cuộn trang -->
+    <div id="scrollProgressWire"></div>
+
+    <!-- Quầng sáng thở sinh học -->
+    <AtmosphereGlow />
+
+    <!-- Lớp bụi than hồng lơ lửng -->
+    <EmbersCanvas />
+
+    <!-- Header điều hướng -->
+    <Header currentPath={currentPath} lang={lang} />
+
+    <!-- Nội dung chính -->
+    <main class="relative z-10 pt-24">
+      <slot />
+    </main>
+
+    <!-- Chân trang -->
+    <Footer lang={lang} />
+
+    <!-- Script Kích Hoạt Scroll Reveal & Scroll Progress -->
+    <script>
+      function initZenScrollReveal() {
+        const progressWire = document.getElementById('scrollProgressWire');
+        window.addEventListener('scroll', () => {
+          const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+          if (totalHeight > 0 && progressWire) {
+            const progress = (window.scrollY / totalHeight) * 100;
+            progressWire.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+          }
+        }, { passive: true });
+
+        const reveals = document.querySelectorAll('.zen-reveal');
+        if (!reveals.length) return;
+
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+              }
+            });
+          }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+          });
+
+          reveals.forEach(el => observer.observe(el));
+        } else {
+          reveals.forEach(el => el.classList.add('is-visible'));
+        }
+      }
+
+      initZenScrollReveal();
+      document.addEventListener('astro:page-load', initZenScrollReveal);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+---
+import { getJourney, toLite } from '../lib/journey';
+import { getT, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'vi' } = Astro.props;
+const t = getT(lang);
+const postsData = (await getJourney(lang)).filter((p) => p.id.includes('/bai-')).map((p) => toLite(p, lang));
+const basePostsUrl = lang === 'en' ? '/en/posts' : '/posts';
+---
+
+<a id="dailyPebbleLink" href={basePostsUrl} class="zen-pebble-pod block p-6 sm:p-10 relative overflow-hidden group pebble-press">
+  <div id="dailyPebbleGlow" class="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl pointer-events-none opacity-20 bg-zen-sage"></div>
+
+  <div class="relative flex flex-wrap items-center justify-between gap-3 mb-6">
+    <span class="zen-chip text-zen-emerald bg-zen-emerald/10 border border-zen-emerald/20">
+      🪨 {t.todayPebble}
+    </span>
+    <span id="dailyPebbleDate" class="text-[11px] text-zen-muted"></span>
+  </div>
+
+  <p id="dailyPebbleTitle" class="relative text-xl sm:text-2xl font-serif text-zen-cream leading-snug mb-4">&nbsp;</p>
+  <p class="relative text-sm text-zen-muted leading-relaxed">
+    <span class="text-zen-subtle">{lang === 'en' ? 'Core reflection:' : 'Câu hỏi của bài:'}</span>
+    <span id="dailyPebbleQuestion" class="italic"></span>
+  </p>
+
+  <div class="relative mt-6 flex items-center justify-between text-xs">
+    <span id="dailyPebbleMeta" class="text-zen-subtle"></span>
+    <span class="font-semibold text-zen-emerald group-hover:translate-x-1 transition-transform">
+      {lang === 'en' ? 'Read article →' : 'Đọc bài →'}
+    </span>
+  </div>
+</a>
+
+<script define:vars={{ postsData, lang }}>
+  function loadDailyPebble() {
+    if (!postsData || !postsData.length) return;
+    const now = new Date();
+    const dayIndex = Math.floor(
+      (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 86400000
+    );
+    const post = postsData[(now.getFullYear() * 366 + dayIndex) % postsData.length];
+
+    const $ = (id) => document.getElementById(id);
+    const locale = lang === 'en' ? 'en-US' : 'vi-VN';
+    $('dailyPebbleDate').textContent = now.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+    $('dailyPebbleTitle').textContent = post.title;
+    $('dailyPebbleQuestion').textContent = post.q;
+    
+    if (lang === 'en') {
+      $('dailyPebbleMeta').textContent = `Article ${post.n} • Stream ${post.mach} • ${post.min} min read`;
+      $('dailyPebbleLink').href = `/en/posts/${post.id}`;
+    } else {
+      $('dailyPebbleMeta').textContent = `Bài ${post.n} • Mạch ${post.mach} • ${post.min} phút đọc`;
+      $('dailyPebbleLink').href = `/posts/${post.id}`;
+    }
+    
+    $('dailyPebbleGlow').style.background = post.color;
+  }
+
+  loadDailyPebble();
+</script>

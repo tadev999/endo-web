@@ -1,127 +1,302 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-@layer base {
-  :root {
-    --color-bg: #ffffff;
-    --color-fg: #0f172a;
-    --color-border: #e2e8f0;
-    --color-accent: #10b981; /* Emerald 500 */
-    --color-muted: #f8fafc;
-    --color-muted-fg: #64748b;
-    --color-card: #ffffff;
-  }
-
-  :root[data-theme="dark"] {
-    --color-bg: #0b0f19; /* Deep indigo-gray */
-    --color-fg: #f1f5f9;
-    --color-border: #1e293b;
-    --color-accent: #34d399; /* Emerald 400 */
-    --color-muted: #111827;
-    --color-muted-fg: #94a3b8;
-    --color-card: #0f172a;
-  }
-
-  body {
-    background-color: var(--color-bg);
-    color: var(--color-fg);
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
+:root {
+  --zen-bg: #0F141C;
+  --zen-surface: #181F2C;
+  --zen-sage: #2A9D8F;
+  --zen-ember: #E76F51;
+  --zen-cream: #F8FAFC;
 }
 
-/* Custom scrollbars */
+html {
+  background-color: var(--zen-bg);
+  color: var(--zen-cream);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Zen Scrollbar thanh thoát */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #0F141C;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted-fg);
+  background: rgba(42, 157, 143, 0.4);
 }
 
-/* Typography styles for article rendering */
-.prose {
-  font-size: 1.05rem;
-  line-height: 1.8;
+/* Glassmorphism Classes */
+.zen-glass {
+  background: rgba(17, 24, 35, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.prose h1 {
-  font-size: 2.25rem;
-  font-weight: 700;
-  margin-top: 2rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.25;
+.zen-glass-card {
+  background: rgba(17, 24, 35, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.prose h2 {
-  font-size: 1.5rem;
+.zen-glass-card:hover {
+  background: rgba(23, 32, 47, 0.75);
+  border-color: rgba(42, 157, 143, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(42, 157, 143, 0.08);
+}
+
+/* Vùng đọc sách Serene Reader - Chuẩn Lora Thiền Định Đồng Bộ Với App Anam */
+.zen-reading-content {
+  font-family: 'Lora', Georgia, Cambria, serif;
+  font-size: 1.15rem;
+  line-height: 1.9;
+  letter-spacing: 0.005em;
+  color: #CBD5E1;
+}
+
+.zen-reading-content h1,
+.zen-reading-content h2,
+.zen-reading-content h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.zen-reading-content p {
+  margin-bottom: 1.6em;
+}
+
+.zen-reading-content strong {
+  color: #FFFFFF;
   font-weight: 600;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.25rem;
-  border-b: 1px solid var(--color-border);
 }
 
-.prose h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-top: 1.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.prose p {
-  margin-bottom: 1.25rem;
-}
-
-.prose blockquote {
-  border-left: 4px solid var(--color-accent);
-  padding-left: 1rem;
-  margin-left: 0;
-  margin-right: 0;
+.zen-reading-content blockquote {
+  border-left: 2px solid #2A9D8F;
+  padding-left: 1.5rem;
   font-style: italic;
-  color: var(--color-muted-fg);
-}
-
-.prose hr {
-  border: 0;
-  border-top: 1px solid var(--color-border);
+  color: #E2E8F0;
   margin: 2rem 0;
+  background: rgba(42, 157, 143, 0.04);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 12px 12px 0;
 }
 
-.prose a {
-  color: var(--color-accent);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+/* Quầng sáng thở sinh học */
+.aura-glow {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.prose a:hover {
-  opacity: 0.8;
+/* Hạt tro than lơ lửng */
+.ember-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFAA70 20%, #E76F51 85%);
+  box-shadow: 0 0 8px #FF9E79;
+  pointer-events: none;
 }
 
-.prose ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-  margin-bottom: 1.25rem;
+/* 🌿 HIỆU ỨNG CUỘN SƯƠNG MÙ KHAI MỞ (ZEN SCROLL REVEAL) */
+.zen-reveal {
+  opacity: 0;
+  filter: blur(16px);
+  transform: translateY(44px) scale(0.96);
+  transition: opacity 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, filter, transform;
 }
 
-.prose ol {
-  list-style-type: decimal;
-  padding-left: 1.5rem;
-  margin-bottom: 1.25rem;
+.zen-reveal.is-visible {
+  opacity: 1;
+  filter: blur(0px);
+  transform: translateY(0) scale(1);
 }
 
-.prose li {
-  margin-bottom: 0.5rem;
+/* Trôi lệch pha các phần tử con (Stagger Flow) */
+.zen-reveal [data-zen-stagger] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.zen-reveal.is-visible [data-zen-stagger="1"] {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 120ms;
+}
+
+.zen-reveal.is-visible [data-zen-stagger="2"] {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 240ms;
+}
+
+.zen-reveal.is-visible [data-zen-stagger="3"] {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 380ms;
+}
+
+.zen-reveal.is-visible [data-zen-stagger="4"] {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 520ms;
+}
+
+/* Sợi tơ ngọc bích đo tiến trình cuộn trang */
+#scrollProgressWire {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #2A9D8F 0%, #52B788 50%, #74C69D 100%);
+  box-shadow: 0 0 10px rgba(42, 157, 143, 0.8), 0 0 20px rgba(82, 183, 136, 0.4);
+  width: 0%;
+  z-index: 100;
+  pointer-events: none;
+  transition: width 0.1s ease-out;
+}
+
+/* 🌊 KHÔNG GIAN THIỀN HỮU CƠ (ORGANIC ZEN SANCTUARY) */
+.zen-river-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Tab chuyển đổi Thân - Tâm nhẹ nhàng */
+.zen-tab-btn {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 9999px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.zen-tab-btn.is-active {
+  background: rgba(42, 157, 143, 0.16);
+  color: #74C69D;
+  border-color: rgba(42, 157, 143, 0.35);
+  box-shadow: 0 0 20px rgba(42, 157, 143, 0.12);
+}
+
+.zen-tab-btn:not(.is-active) {
+  color: #94A3B8;
+  background: transparent;
+}
+
+.zen-tab-btn:not(.is-active):hover {
+  color: #F8FAFC;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Phiến Sương Huyền Ảo - Hòa quyện thanh thoát cùng background */
+.zen-stream-pod {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 52rem;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 2rem;
+  background: radial-gradient(120% 100% at 50% 0%, rgba(22, 35, 50, 0.45) 0%, rgba(9, 14, 22, 0.35) 100%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5),
+              inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.zen-stream-pod:hover {
+  border-color: rgba(72, 182, 167, 0.25);
+  box-shadow: 0 28px 70px -20px rgba(0, 0, 0, 0.6),
+              inset 0 1px 1px 0 rgba(255, 255, 255, 0.14),
+              inset 0 0 40px rgba(72, 182, 167, 0.05);
+}
+
+/* Thẻ sỏi thanh tịnh (Pebble Pod) */
+.zen-pebble-pod {
+  border-radius: 1.75rem;
+  background: radial-gradient(120% 100% at 50% 0%, rgba(20, 30, 42, 0.5) 0%, rgba(8, 12, 19, 0.4) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.45);
+}
+
+/* Khoảng phân tầng sương mờ thiền định */
+.zen-mist-divider {
+  width: 100%;
+  max-width: 32rem;
+  height: 1px;
+  margin: 3.5rem auto;
+  background: radial-gradient(circle, rgba(72, 182, 167, 0.2) 0%, rgba(72, 182, 167, 0) 100%);
+}
+
+@media (max-width: 767px) {
+  .zen-stream-pod,
+  .zen-pebble-pod {
+    border-radius: 1.5rem;
+  }
+}
+
+/* 🪨 PEBBLE PRESS — phản hồi chạm giống Anam (co về 0.95 trong 150ms) */
+.pebble-press {
+  transition: transform 150ms ease-out, background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+.pebble-press:active {
+  transform: scale(0.95);
+}
+
+/* Nhãn nhỏ dạng viên sỏi */
+.zen-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zen-reveal, .zen-reveal [data-zen-stagger] { opacity: 1; filter: none; transform: none; transition: none; }
+}
+
+/* Bảng so sánh trong bài cuộn ngang trên điện thoại */
+.zen-reading-content table {
+  display: block;
+  overflow-x: auto;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+.zen-reading-content th:last-child,
+.zen-reading-content td:last-child {
+  color: #48B6A7;
 }
